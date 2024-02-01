@@ -32,6 +32,6 @@ Contains bioinformatics workflows for:
 Contains bioinformatics workflows specific to the manuscript *Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria*:
 1. The MarkDown file `RNA-Seq_experimental_evolution.md` describes the general RNA-Seq analysis workflow
 2. Each `RNAseq_<strain>` directory includes:
-  * The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis in R
-  * The rendered HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script
-  * Other relevant files for the analysis (see the general workflow)
+   * The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis
+   * The rendered HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script
+   * Other relevant files for the analysis (see the general workflow)
