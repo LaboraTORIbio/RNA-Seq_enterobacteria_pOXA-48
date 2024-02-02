@@ -175,4 +175,16 @@ The first step in DE analysis is counting the number of reads mapped to each gen
 ../RNA-Seq/gff3_to_saf.py ./RNAseq_K275/K275p_maskedIS.gff > ./RNAseq_K275/K275p_maskedIS.saf
 ```
 
-Finally, the script **quant_diffexpr.Rmd** (located at each strain's *RNAseq* directory) was run for each strain  to perform read quantification with **featureCounts v2.14.2**, data exploratory analyses and DE with **DESeq2 v1.40.1**. DE analyses are always performed comparing the pOXA-48-carrying versions of the strains (transconjugants or WT pOXA-48-carrying strains) against the pOXA-48-free strains (WT naive strains or cured from pOXA-48). In general, the percentage of successfully assigned alignments to features was high (>90%), and replicates between conditions separated well by PC1, except in K275/KPN18, possibly reflecting low impact of pOXA-48 carriage in this strain (see the **quant_diffexpr.html** file of each analysis).
+Finally, the script **quant_diffexpr.Rmd** (located at each strain's *RNAseq* directory) was run for each strain  to perform read quantification with **featureCounts v2.14.2**, data exploratory analyses and DE with **DESeq2 v1.40.1**. DE analyses are always performed comparing the pOXA-48-carrying versions of the strains (transconjugants or WT pOXA-48-carrying strains) against the pOXA-48-free strains (WT naive strains or cured from pOXA-48). In general, the percentage of successfully assigned alignments to features was high (>90%), and replicates between conditions separated well by PC1, except in K275/KPN18, possibly reflecting low impact of pOXA-48 carriage in this strain. See the **quant_diffexpr.html** file of each analysis:
+
+* [Read quantification and DE analysis of strain C325](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_C325/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain CF13](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_CF13/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain H53](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_H53/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K147](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K147/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain C063](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_C063/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K091](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K091/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K141](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K141/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K209](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K209/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K249](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K249/quant_diffexpr.html)
+* [Read quantification and DE analysis of strain K275](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_experimental_evolution/RNAseq_K275/quant_diffexpr.html)
+
