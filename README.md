@@ -20,18 +20,18 @@ Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Her
 
 </br>
 
-### Directory `Genome_assemblies`
-Includes a MarkDown file describing the bioinformatics workflow for generating closed reference genomes: `closing_reference_genomes.md`, common to both manuscripts.
+### Directory [`Genome_assemblies`](./Genome_assemblies/)
+Includes a MarkDown file describing the bioinformatics workflow for generating closed reference genomes: [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md). Common to both manuscripts.
 
-### Directory `RNA-Seq`
+### Directory [`RNA-Seq`](./RNA-Seq/)
 Contains bioinformatics workflows for:
-1. RNA-Seq read quality control, described in the MarkDown file `read_quality_control.md`, with associated files in subdirectory `reads_RNAseq`, common to both manuscripts.
-2. Main RNA-Seq data analysis (*for manuscript in process...*)
+**RNA-Seq read quality control:** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq/read_quality_control.md), with associated files in subdirectory `reads_RNAseq`. Common to both manuscripts.
+**Main RNA-Seq data analysis** (*for manuscript in process...*)
 
-### Directory `RNA-Seq_experimental_evolution`
+### Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
 Contains bioinformatics workflows specific to the manuscript *Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria*:
-1. The MarkDown file `RNA-Seq_experimental_evolution.md` describes the general RNA-Seq analysis workflow
-2. Each `RNAseq_<strain>` directory includes:
+1. The general RNA-Seq analysis workflow is described in [`RNA-Seq_experimental_evolution.md`](./RNA-Seq_experimental_evolution/RNA-Seq_experimental_evolution.md)
+2. Each `RNAseq_<strain>` subdirectory includes:
    * The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis
-   * The rendered HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script
+   * The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
    * Other relevant files for the analysis (see the general workflow)
