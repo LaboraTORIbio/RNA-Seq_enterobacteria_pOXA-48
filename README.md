@@ -25,7 +25,9 @@ Includes a MarkDown file describing the bioinformatics workflow for generating c
 
 ### Directory [`RNA-Seq`](./RNA-Seq/)
 Contains bioinformatics workflows for:
+
 **RNA-Seq read quality control:** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq/read_quality_control.md), with associated files in subdirectory `reads_RNAseq`. Common to both manuscripts.
+
 **Main RNA-Seq data analysis** (*for manuscript in process...*)
 
 ### Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
