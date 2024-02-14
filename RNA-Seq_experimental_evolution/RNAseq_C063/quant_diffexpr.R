@@ -32,8 +32,8 @@ barplot(colSums(countdata), las=3, main="Counts")
 
 # DESeqDataSet object and experimental design
 
-condition <- c('wt', 'wt', 'wt', 'tc', 'tc', 'tc')
-replicate <- c('1', '2', '3', '1', '2', '3')
+condition <- c('wt', 'wt', 'wt', 'tc', 'tc')
+replicate <- c('1', '2', '3', '1', '2')
 coldata <- as.data.frame(cbind(colnames(countdata), condition, replicate))
 coldata
 
