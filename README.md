@@ -20,17 +20,17 @@ Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Her
 
 </br>
 
-### Directory [`Genome_assemblies`](./Genome_assemblies/)
+### 📂 Directory [`Genome_assemblies`](./Genome_assemblies/)
 Includes a MarkDown file describing the bioinformatics workflow for generating closed reference genomes: [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md). Common to both manuscripts.
 
-### Directory [`RNA-Seq`](./RNA-Seq/)
+### 📂 Directory [`RNA-Seq`](./RNA-Seq/)
 Contains bioinformatics workflows for:
 
 **RNA-Seq read quality control:** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq/read_quality_control.md), with associated files in subdirectory `reads_RNAseq`. Common to both manuscripts.
 
 **Main RNA-Seq data analysis** (*for manuscript in process...*)
 
-### Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
+### 📂 Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
 Contains bioinformatics workflows specific to the manuscript *Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria*:
 1. The general RNA-Seq analysis workflow is described in [`RNA-Seq_experimental_evolution.md`](./RNA-Seq_experimental_evolution/RNA-Seq_experimental_evolution.md)
 2. Each `RNAseq_<strain>` subdirectory includes:
