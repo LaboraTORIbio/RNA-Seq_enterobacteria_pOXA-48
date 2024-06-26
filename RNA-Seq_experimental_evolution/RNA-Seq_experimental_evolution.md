@@ -2,7 +2,7 @@
 
 ## Project setup
 
-Before starting, check how reference genomes were assembled and closed ([closing_reference_genomes.md](Genome_assemblies/closing_reference_genomes.md)) and how RNA-Seq reads were processed ([read_quality_control.md](RNA-Seq/read_quality_control.md)).
+Before starting, check how reference genomes were assembled and closed ([closing_reference_genomes.md](../Genome_assemblies/closing_reference_genomes.md)) and how RNA-Seq reads were processed ([read_quality_control.md](../RNA-Seq_1st_dataset/read_quality_control.md)).
 
 In this project, we will not use the RNA-Seq data of the *E. coli* strain MG1655 since we are interested in clinical strains. Also, we will use the alternative strain nomenclature for the pOXA-48-naive strains, to match that of the main manuscript. Therefore: EC10 = C063, KPN04 = K091, KPN07 = K141, KPN10 = K209, KPN15 = K249 and KPN18 = K275. Here, the suffix *p* denotes the pOXA-48-carrying strain.
 
