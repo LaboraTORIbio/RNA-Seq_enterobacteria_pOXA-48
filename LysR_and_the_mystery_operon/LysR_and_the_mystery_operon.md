@@ -85,7 +85,7 @@ cd ..
 
 ## Identifying the *lysR-pfp-ifp* cluster with MacSyFinder
 
-A MacSyFinder v2.0 model, **MysteryOperonFinder** (available [here](https://github.com/LaboraTORIbio/RNA-Seq_enterobacteria_pOXA-48/LysR_and_the_mystery_operon/MysteryOperonFinder)), was constructed to identify the *lysR-pfp-ifp* cluster (hereon referred to as *cluster* in the text or *operon* in file/dirs names) in the Proteobacteria database. To construct the model, the Pfam HMM profiles (release 35.0) of the three proteins (LysR: PF03466, PFP: PF02678, IFP: PF00857) were downloaded from InterPro v95.0 after an InterProScan 5 search, into the model directory `MysteryOperonFinder/profiles/`.
+A MacSyFinder v2.0 model, **MysteryOperonFinder** (available [here](https://github.com/LaboraTORIbio/RNA-Seq_enterobacteria_pOXA-48/tree/main/LysR_and_the_mystery_operon/MysteryOperonFinder)), was constructed to identify the *lysR-pfp-ifp* cluster (hereon referred to as *cluster* in the text or *operon* in file/dirs names) in the Proteobacteria database. To construct the model, the Pfam HMM profiles (release 35.0) of the three proteins (LysR: PF03466, PFP: PF02678, IFP: PF00857) were downloaded from InterPro v95.0 after an InterProScan 5 search, into the model directory `MysteryOperonFinder/profiles/`.
 
 The model is configured to find systems that contain the three genes consecutively (min_mandatory_genes_required = 3, min_genes_required = 3, inter_gene_max_space = 0), although order and sense cannot be specified. Then, the model is used with **MacSyFinder v2.1.1** to find the cluster (also called system or model by MacSyFinder) in the database (change the --models-dir path to where you stored the model):
 
