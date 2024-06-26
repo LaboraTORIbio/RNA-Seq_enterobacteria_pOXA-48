@@ -1,0 +1,125 @@
+---
+title: "TPM calculation"
+author: "Laura Toribio-Celestino"
+date: "10/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading required packages
+
+```{r, results='hide', eval=TRUE, message=FALSE, warning=FALSE}
+library(DESeq2)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(dunn.test)
+```
+
+### Importing the count table and constructing the DESeq2 object
+
+```{r, eval=TRUE}
+# Importing count table
+fc_full <- read.table("featureCounts.tsv", header = TRUE, row.names = 1)
+colnames(fc_full) <- gsub("\\.bam$", "", colnames(fc_full))
+countdata <- fc_full
+# Saving gene lengths and chromosome ids
+geneLength <- countdata$Length
+chrName <- countdata$Chr
+# Final count tables
+countdata$Length <- NULL
+countdata$Chr <- NULL
+head(countdata)
+tail(countdata)
+```
+
+Building the variables for the columns of the colData object.
+
+```{r, eval=TRUE}
+condition <- c('wt', 'wt', 'wt', 'cur', 'cur', 'cur')
+replicate <- c('1', '2', '3', '1', '2', '3')
+coldata <- as.data.frame(cbind(colnames(countdata), condition, replicate))
+coldata
+```
+
+Constructing the DESeqDataSet object. Samples that do not carry pOXA-48 are removed after constructing the dds objects.
+
+```{r, eval=TRUE}
+plasfreenames <- c("H53c1.1", "H53c1.2", "H53c1.3")
+dds <- DESeqDataSetFromMatrix(countData = countdata, colData = coldata, design = ~ condition)
+dds <- dds[, !colnames(dds) %in% plasfreenames]
+dds
+```
+
+### Calculating FPKM values
+
+```{r, eval=TRUE}
+mcols(dds)$basepairs = geneLength
+fpkm_all <- fpkm(dds)
+head(fpkm_all)
+tail(fpkm_all)
+```
+
+### Calculating TPM values
+
+```{r, eval=TRUE}
+tpm_all <- as.data.frame(apply(fpkm_all, 2, function(x){(x/sum(x))*1E6}))
+tpm_all$Chr <- chrName
+head(tpm_all)
+tail(tpm_all)
+```
+
+### Violin plots
+
+```{r, eval=TRUE}
+df <- tibble::rownames_to_column(tpm_all, "GeneID")
+df[df == "cds-pgaptmp_005364"] <- "blaOXA-48"
+
+# Only chromosomal and pOXA-48 rows are selected
+df <- subset(df, Chr %in% c("1", "1;1", "3"))
+df$Chr[df$Chr %in% c("1", "1;1")] <- "Chromosome"
+df$Chr[df$Chr %in% c("3")] <- "pOXA-48"
+# Dataframe is melted for correct representation
+dfmelted <- melt(df, id.vars=c('Chr', 'GeneID'), value.name = 'TPM', variable.name = 'Replicate')
+head(dfmelted)
+tail(dfmelted)
+
+p <- ggplot(dfmelted, aes(Replicate, TPM))
+p + geom_violin(aes(Replicate, TPM, fill=Chr), position=position_dodge(.9)) +
+  xlab(NULL) + ylab("log2 TPM") + scale_y_continuous(trans = "log10") +
+  stat_summary(aes(group=Chr), position=position_dodge(.9), fun = "median", geom = "point", color = "black") +
+  geom_text(aes(Replicate, TPM, label=GeneID), data=dfmelted[dfmelted$GeneID %in% "blaOXA-48", ])
+```
+
+### Some stats
+
+Spearman correlation between pOXA-48-carrying replicates.
+
+```{r, eval=TRUE}
+cor(tpm_all[,1:3], method="spearman")
+```
+
+Kruskal-Wallis test followed by Dunn's test to assess differences between replicates.
+
+```{r, eval=TRUE}
+kruskal.test(TPM ~ Replicate, data = dfmelted)
+dunn.test(dfmelted$TPM, g = dfmelted$Replicate, method = "bh")
+```
+
+### Calculating mean TPM values
+
+```{r, eval=TRUE}
+df$median_tpm <- apply(df[, 2:4], 1, median) # change replicate columns if necessary
+head(df)
+tail(df)
+write.table(df, file="TPM_H53_chr_pOXA48.tsv", sep="\t", row.names=FALSE)
+```
+
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```

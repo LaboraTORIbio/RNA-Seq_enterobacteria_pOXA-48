@@ -1,0 +1,1253 @@
+---
+title: "Gene Set Enrichment Analysis (GSEA)"
+author: "Laura Toribio-Celestino"
+date: "May 2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, results='hide', eval=TRUE, message=FALSE, warning=FALSE}
+library(clusterProfiler)
+library(enrichplot)
+library(ggplot2)
+library(stringr)
+library(scales)
+```
+
+A random seed is set to obtain reproducible results when running GSEA.
+
+```{r, eval=TRUE}
+set.seed(12345)
+```
+
+
+
+# GSEA of cured strains
+
+## C325
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+C325_chr <- read.table("geneLists/C325_chromosome.tsv", sep="\t", header=FALSE)
+C325_geneList_chr <- C325_chr[,2]
+names(C325_geneList_chr) <- as.character(C325_chr[,1])
+C325_geneList_chr <- sort(C325_geneList_chr, decreasing=TRUE)
+C325_plas <- read.table("geneLists/C325_plasmids.tsv", sep="\t", header=FALSE)
+C325_geneList_plas <- C325_plas[,2]
+names(C325_geneList_plas) <- as.character(C325_plas[,1])
+C325_geneList_plas <- sort(C325_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+C325_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_C325_chr_BP.tsv", sep="\t", header=FALSE)
+C325_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_C325_chr_MF.tsv", sep="\t", header=FALSE)
+C325_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_C325_chr_CC.tsv", sep="\t", header=FALSE)
+C325_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_C325_plas_BP.tsv", sep="\t", header=FALSE)
+C325_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_C325_plas_MF.tsv", sep="\t", header=FALSE)
+C325_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_C325_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+C325_t2n_chr_BP <- read.table("TERM2NAME/C325_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+C325_t2n_chr_MF <- read.table("TERM2NAME/C325_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+C325_t2n_chr_CC <- read.table("TERM2NAME/C325_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+C325_t2n_plas_BP <- read.table("TERM2NAME/C325_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+C325_t2n_plas_MF <- read.table("TERM2NAME/C325_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+C325_t2n_plas_CC <- read.table("TERM2NAME/C325_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+C325_GSEA_chr_BP <- GSEA(C325_geneList_chr, TERM2GENE = C325_t2g_chr_BP, TERM2NAME = C325_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+C325_GSEA_chr_MF <- GSEA(C325_geneList_chr, TERM2GENE = C325_t2g_chr_MF, TERM2NAME = C325_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+C325_GSEA_chr_CC <- GSEA(C325_geneList_chr, TERM2GENE = C325_t2g_chr_CC, TERM2NAME = C325_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+C325_GSEA_plas_BP <- GSEA(C325_geneList_plas, TERM2GENE = C325_t2g_plas_BP, TERM2NAME = C325_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+C325_GSEA_plas_MF <- GSEA(C325_geneList_plas, TERM2GENE = C325_t2g_plas_MF, TERM2NAME = C325_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+C325_GSEA_plas_CC <- GSEA(C325_geneList_plas, TERM2GENE = C325_t2g_plas_CC, TERM2NAME = C325_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(C325_GSEA_plas_CC))
+```
+
+
+
+## CF13
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+CF13_chr <- read.table("geneLists/CF13_chromosome.tsv", sep="\t", header=FALSE)
+CF13_geneList_chr <- CF13_chr[,2]
+names(CF13_geneList_chr) <- as.character(CF13_chr[,1])
+CF13_geneList_chr <- sort(CF13_geneList_chr, decreasing=TRUE)
+CF13_plas <- read.table("geneLists/CF13_plasmids.tsv", sep="\t", header=FALSE)
+CF13_geneList_plas <- CF13_plas[,2]
+names(CF13_geneList_plas) <- as.character(CF13_plas[,1])
+CF13_geneList_plas <- sort(CF13_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+CF13_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_CF13_chr_BP.tsv", sep="\t", header=FALSE)
+CF13_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_CF13_chr_MF.tsv", sep="\t", header=FALSE)
+CF13_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_CF13_chr_CC.tsv", sep="\t", header=FALSE)
+CF13_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_CF13_plas_BP.tsv", sep="\t", header=FALSE)
+CF13_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_CF13_plas_MF.tsv", sep="\t", header=FALSE)
+CF13_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_CF13_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+CF13_t2n_chr_BP <- read.table("TERM2NAME/CF13_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+CF13_t2n_chr_MF <- read.table("TERM2NAME/CF13_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+CF13_t2n_chr_CC <- read.table("TERM2NAME/CF13_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+CF13_t2n_plas_BP <- read.table("TERM2NAME/CF13_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+CF13_t2n_plas_MF <- read.table("TERM2NAME/CF13_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+CF13_t2n_plas_CC <- read.table("TERM2NAME/CF13_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+CF13_GSEA_chr_BP <- GSEA(CF13_geneList_chr, TERM2GENE = CF13_t2g_chr_BP, TERM2NAME = CF13_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+CF13_GSEA_chr_MF <- GSEA(CF13_geneList_chr, TERM2GENE = CF13_t2g_chr_MF, TERM2NAME = CF13_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+CF13_GSEA_chr_CC <- GSEA(CF13_geneList_chr, TERM2GENE = CF13_t2g_chr_CC, TERM2NAME = CF13_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+CF13_GSEA_plas_BP <- GSEA(CF13_geneList_plas, TERM2GENE = CF13_t2g_plas_BP, TERM2NAME = CF13_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+CF13_GSEA_plas_MF <- GSEA(CF13_geneList_plas, TERM2GENE = CF13_t2g_plas_MF, TERM2NAME = CF13_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+CF13_GSEA_plas_CC <- GSEA(CF13_geneList_plas, TERM2GENE = CF13_t2g_plas_CC, TERM2NAME = CF13_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(CF13_GSEA_plas_CC))
+```
+
+
+
+## H53
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+H53_chr <- read.table("geneLists/H53_chromosome.tsv", sep="\t", header=FALSE)
+H53_geneList_chr <- H53_chr[,2]
+names(H53_geneList_chr) <- as.character(H53_chr[,1])
+H53_geneList_chr <- sort(H53_geneList_chr, decreasing=TRUE)
+H53_plas <- read.table("geneLists/H53_plasmids.tsv", sep="\t", header=FALSE)
+H53_geneList_plas <- H53_plas[,2]
+names(H53_geneList_plas) <- as.character(H53_plas[,1])
+H53_geneList_plas <- sort(H53_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+H53_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_H53_chr_BP.tsv", sep="\t", header=FALSE)
+H53_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_H53_chr_MF.tsv", sep="\t", header=FALSE)
+H53_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_H53_chr_CC.tsv", sep="\t", header=FALSE)
+H53_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_H53_plas_BP.tsv", sep="\t", header=FALSE)
+H53_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_H53_plas_MF.tsv", sep="\t", header=FALSE)
+H53_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_H53_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+H53_t2n_chr_BP <- read.table("TERM2NAME/H53_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+H53_t2n_chr_MF <- read.table("TERM2NAME/H53_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+H53_t2n_chr_CC <- read.table("TERM2NAME/H53_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+H53_t2n_plas_BP <- read.table("TERM2NAME/H53_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+H53_t2n_plas_MF <- read.table("TERM2NAME/H53_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+H53_t2n_plas_CC <- read.table("TERM2NAME/H53_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+H53_GSEA_chr_BP <- GSEA(H53_geneList_chr, TERM2GENE = H53_t2g_chr_BP, TERM2NAME = H53_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+H53_GSEA_chr_MF <- GSEA(H53_geneList_chr, TERM2GENE = H53_t2g_chr_MF, TERM2NAME = H53_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+H53_GSEA_chr_CC <- GSEA(H53_geneList_chr, TERM2GENE = H53_t2g_chr_CC, TERM2NAME = H53_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+H53_GSEA_plas_BP <- GSEA(H53_geneList_plas, TERM2GENE = H53_t2g_plas_BP, TERM2NAME = H53_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+H53_GSEA_plas_MF <- GSEA(H53_geneList_plas, TERM2GENE = H53_t2g_plas_MF, TERM2NAME = H53_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+H53_GSEA_plas_CC <- GSEA(H53_geneList_plas, TERM2GENE = H53_t2g_plas_CC, TERM2NAME = H53_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(H53_GSEA_plas_CC))
+```
+
+
+
+## J57
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+J57_chr <- read.table("geneLists/J57_chromosome.tsv", sep="\t", header=FALSE)
+J57_geneList_chr <- J57_chr[,2]
+names(J57_geneList_chr) <- as.character(J57_chr[,1])
+J57_geneList_chr <- sort(J57_geneList_chr, decreasing=TRUE)
+J57_plas <- read.table("geneLists/J57_plasmids.tsv", sep="\t", header=FALSE)
+J57_geneList_plas <- J57_plas[,2]
+names(J57_geneList_plas) <- as.character(J57_plas[,1])
+J57_geneList_plas <- sort(J57_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+J57_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_J57_chr_BP.tsv", sep="\t", header=FALSE)
+J57_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_J57_chr_MF.tsv", sep="\t", header=FALSE)
+J57_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_J57_chr_CC.tsv", sep="\t", header=FALSE)
+J57_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_J57_plas_BP.tsv", sep="\t", header=FALSE)
+J57_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_J57_plas_MF.tsv", sep="\t", header=FALSE)
+J57_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_J57_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+J57_t2n_chr_BP <- read.table("TERM2NAME/J57_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+J57_t2n_chr_MF <- read.table("TERM2NAME/J57_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+J57_t2n_chr_CC <- read.table("TERM2NAME/J57_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+J57_t2n_plas_BP <- read.table("TERM2NAME/J57_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+J57_t2n_plas_MF <- read.table("TERM2NAME/J57_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+J57_t2n_plas_CC <- read.table("TERM2NAME/J57_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+J57_GSEA_chr_BP <- GSEA(J57_geneList_chr, TERM2GENE = J57_t2g_chr_BP, TERM2NAME = J57_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+J57_GSEA_chr_MF <- GSEA(J57_geneList_chr, TERM2GENE = J57_t2g_chr_MF, TERM2NAME = J57_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+J57_GSEA_chr_CC <- GSEA(J57_geneList_chr, TERM2GENE = J57_t2g_chr_CC, TERM2NAME = J57_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+J57_GSEA_plas_BP <- GSEA(J57_geneList_plas, TERM2GENE = J57_t2g_plas_BP, TERM2NAME = J57_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+J57_GSEA_plas_MF <- GSEA(J57_geneList_plas, TERM2GENE = J57_t2g_plas_MF, TERM2NAME = J57_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+J57_GSEA_plas_CC <- GSEA(J57_geneList_plas, TERM2GENE = J57_t2g_plas_CC, TERM2NAME = J57_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(J57_GSEA_plas_CC))
+```
+
+
+
+## K147
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+K147_chr <- read.table("geneLists/K147_chromosome.tsv", sep="\t", header=FALSE)
+K147_geneList_chr <- K147_chr[,2]
+names(K147_geneList_chr) <- as.character(K147_chr[,1])
+K147_geneList_chr <- sort(K147_geneList_chr, decreasing=TRUE)
+K147_plas <- read.table("geneLists/K147_plasmids.tsv", sep="\t", header=FALSE)
+K147_geneList_plas <- K147_plas[,2]
+names(K147_geneList_plas) <- as.character(K147_plas[,1])
+K147_geneList_plas <- sort(K147_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+K147_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_K147_chr_BP.tsv", sep="\t", header=FALSE)
+K147_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_K147_chr_MF.tsv", sep="\t", header=FALSE)
+K147_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_K147_chr_CC.tsv", sep="\t", header=FALSE)
+K147_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_K147_plas_BP.tsv", sep="\t", header=FALSE)
+K147_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_K147_plas_MF.tsv", sep="\t", header=FALSE)
+K147_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_K147_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+K147_t2n_chr_BP <- read.table("TERM2NAME/K147_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+K147_t2n_chr_MF <- read.table("TERM2NAME/K147_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+K147_t2n_chr_CC <- read.table("TERM2NAME/K147_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+K147_t2n_plas_BP <- read.table("TERM2NAME/K147_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+K147_t2n_plas_MF <- read.table("TERM2NAME/K147_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+K147_t2n_plas_CC <- read.table("TERM2NAME/K147_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+K147_GSEA_chr_BP <- GSEA(K147_geneList_chr, TERM2GENE = K147_t2g_chr_BP, TERM2NAME = K147_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+K147_GSEA_chr_MF <- GSEA(K147_geneList_chr, TERM2GENE = K147_t2g_chr_MF, TERM2NAME = K147_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+K147_GSEA_chr_CC <- GSEA(K147_geneList_chr, TERM2GENE = K147_t2g_chr_CC, TERM2NAME = K147_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+K147_GSEA_plas_BP <- GSEA(K147_geneList_plas, TERM2GENE = K147_t2g_plas_BP, TERM2NAME = K147_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+K147_GSEA_plas_MF <- GSEA(K147_geneList_plas, TERM2GENE = K147_t2g_plas_MF, TERM2NAME = K147_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+K147_GSEA_plas_CC <- GSEA(K147_geneList_plas, TERM2GENE = K147_t2g_plas_CC, TERM2NAME = K147_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(K147_GSEA_plas_CC))
+```
+
+
+
+# GSEA of transconjugant strains
+
+## EC10
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+EC10_chr <- read.table("geneLists/EC10_chromosome.tsv", sep="\t", header=FALSE)
+EC10_geneList_chr <- EC10_chr[,2]
+names(EC10_geneList_chr) <- as.character(EC10_chr[,1])
+EC10_geneList_chr <- sort(EC10_geneList_chr, decreasing=TRUE)
+EC10_plas <- read.table("geneLists/EC10_plasmids.tsv", sep="\t", header=FALSE)
+EC10_geneList_plas <- EC10_plas[,2]
+names(EC10_geneList_plas) <- as.character(EC10_plas[,1])
+EC10_geneList_plas <- sort(EC10_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+EC10_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_EC10_chr_BP.tsv", sep="\t", header=FALSE)
+EC10_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_EC10_chr_MF.tsv", sep="\t", header=FALSE)
+EC10_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_EC10_chr_CC.tsv", sep="\t", header=FALSE)
+EC10_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_EC10_plas_BP.tsv", sep="\t", header=FALSE)
+EC10_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_EC10_plas_MF.tsv", sep="\t", header=FALSE)
+EC10_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_EC10_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+EC10_t2n_chr_BP <- read.table("TERM2NAME/EC10_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+EC10_t2n_chr_MF <- read.table("TERM2NAME/EC10_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+EC10_t2n_chr_CC <- read.table("TERM2NAME/EC10_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+EC10_t2n_plas_BP <- read.table("TERM2NAME/EC10_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+EC10_t2n_plas_MF <- read.table("TERM2NAME/EC10_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+EC10_t2n_plas_CC <- read.table("TERM2NAME/EC10_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+EC10_GSEA_chr_BP <- GSEA(EC10_geneList_chr, TERM2GENE = EC10_t2g_chr_BP, TERM2NAME = EC10_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+EC10_GSEA_chr_MF <- GSEA(EC10_geneList_chr, TERM2GENE = EC10_t2g_chr_MF, TERM2NAME = EC10_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+EC10_GSEA_chr_CC <- GSEA(EC10_geneList_chr, TERM2GENE = EC10_t2g_chr_CC, TERM2NAME = EC10_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+EC10_GSEA_plas_BP <- GSEA(EC10_geneList_plas, TERM2GENE = EC10_t2g_plas_BP, TERM2NAME = EC10_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+EC10_GSEA_plas_MF <- GSEA(EC10_geneList_plas, TERM2GENE = EC10_t2g_plas_MF, TERM2NAME = EC10_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+EC10_GSEA_plas_CC <- GSEA(EC10_geneList_plas, TERM2GENE = EC10_t2g_plas_CC, TERM2NAME = EC10_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(EC10_GSEA_plas_CC))
+```
+
+
+
+## KPN04
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+KPN04_chr <- read.table("geneLists/KPN04_chromosome.tsv", sep="\t", header=FALSE)
+KPN04_geneList_chr <- KPN04_chr[,2]
+names(KPN04_geneList_chr) <- as.character(KPN04_chr[,1])
+KPN04_geneList_chr <- sort(KPN04_geneList_chr, decreasing=TRUE)
+KPN04_plas <- read.table("geneLists/KPN04_plasmids.tsv", sep="\t", header=FALSE)
+KPN04_geneList_plas <- KPN04_plas[,2]
+names(KPN04_geneList_plas) <- as.character(KPN04_plas[,1])
+KPN04_geneList_plas <- sort(KPN04_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+KPN04_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_KPN04_chr_BP.tsv", sep="\t", header=FALSE)
+KPN04_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_KPN04_chr_MF.tsv", sep="\t", header=FALSE)
+KPN04_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_KPN04_chr_CC.tsv", sep="\t", header=FALSE)
+KPN04_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_KPN04_plas_BP.tsv", sep="\t", header=FALSE)
+KPN04_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_KPN04_plas_MF.tsv", sep="\t", header=FALSE)
+KPN04_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_KPN04_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+KPN04_t2n_chr_BP <- read.table("TERM2NAME/KPN04_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN04_t2n_chr_MF <- read.table("TERM2NAME/KPN04_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN04_t2n_chr_CC <- read.table("TERM2NAME/KPN04_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+KPN04_t2n_plas_BP <- read.table("TERM2NAME/KPN04_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN04_t2n_plas_MF <- read.table("TERM2NAME/KPN04_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN04_t2n_plas_CC <- read.table("TERM2NAME/KPN04_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+KPN04_GSEA_chr_BP <- GSEA(KPN04_geneList_chr, TERM2GENE = KPN04_t2g_chr_BP, TERM2NAME = KPN04_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+KPN04_GSEA_chr_MF <- GSEA(KPN04_geneList_chr, TERM2GENE = KPN04_t2g_chr_MF, TERM2NAME = KPN04_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+KPN04_GSEA_chr_CC <- GSEA(KPN04_geneList_chr, TERM2GENE = KPN04_t2g_chr_CC, TERM2NAME = KPN04_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+KPN04_GSEA_plas_BP <- GSEA(KPN04_geneList_plas, TERM2GENE = KPN04_t2g_plas_BP, TERM2NAME = KPN04_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+KPN04_GSEA_plas_MF <- GSEA(KPN04_geneList_plas, TERM2GENE = KPN04_t2g_plas_MF, TERM2NAME = KPN04_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+KPN04_GSEA_plas_CC <- GSEA(KPN04_geneList_plas, TERM2GENE = KPN04_t2g_plas_CC, TERM2NAME = KPN04_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(KPN04_GSEA_plas_CC))
+```
+
+
+
+## KPN07
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+KPN07_chr <- read.table("geneLists/KPN07_chromosome.tsv", sep="\t", header=FALSE)
+KPN07_geneList_chr <- KPN07_chr[,2]
+names(KPN07_geneList_chr) <- as.character(KPN07_chr[,1])
+KPN07_geneList_chr <- sort(KPN07_geneList_chr, decreasing=TRUE)
+KPN07_plas <- read.table("geneLists/KPN07_plasmids.tsv", sep="\t", header=FALSE)
+KPN07_geneList_plas <- KPN07_plas[,2]
+names(KPN07_geneList_plas) <- as.character(KPN07_plas[,1])
+KPN07_geneList_plas <- sort(KPN07_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+KPN07_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_KPN07_chr_BP.tsv", sep="\t", header=FALSE)
+KPN07_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_KPN07_chr_MF.tsv", sep="\t", header=FALSE)
+KPN07_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_KPN07_chr_CC.tsv", sep="\t", header=FALSE)
+KPN07_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_KPN07_plas_BP.tsv", sep="\t", header=FALSE)
+KPN07_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_KPN07_plas_MF.tsv", sep="\t", header=FALSE)
+KPN07_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_KPN07_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+KPN07_t2n_chr_BP <- read.table("TERM2NAME/KPN07_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN07_t2n_chr_MF <- read.table("TERM2NAME/KPN07_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN07_t2n_chr_CC <- read.table("TERM2NAME/KPN07_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+KPN07_t2n_plas_BP <- read.table("TERM2NAME/KPN07_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN07_t2n_plas_MF <- read.table("TERM2NAME/KPN07_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN07_t2n_plas_CC <- read.table("TERM2NAME/KPN07_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+KPN07_GSEA_chr_BP <- GSEA(KPN07_geneList_chr, TERM2GENE = KPN07_t2g_chr_BP, TERM2NAME = KPN07_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+KPN07_GSEA_chr_MF <- GSEA(KPN07_geneList_chr, TERM2GENE = KPN07_t2g_chr_MF, TERM2NAME = KPN07_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+KPN07_GSEA_chr_CC <- GSEA(KPN07_geneList_chr, TERM2GENE = KPN07_t2g_chr_CC, TERM2NAME = KPN07_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+KPN07_GSEA_plas_BP <- GSEA(KPN07_geneList_plas, TERM2GENE = KPN07_t2g_plas_BP, TERM2NAME = KPN07_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+KPN07_GSEA_plas_MF <- GSEA(KPN07_geneList_plas, TERM2GENE = KPN07_t2g_plas_MF, TERM2NAME = KPN07_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+KPN07_GSEA_plas_CC <- GSEA(KPN07_geneList_plas, TERM2GENE = KPN07_t2g_plas_CC, TERM2NAME = KPN07_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(KPN07_GSEA_plas_CC))
+```
+
+
+
+## KPN10
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+KPN10_chr <- read.table("geneLists/KPN10_chromosome.tsv", sep="\t", header=FALSE)
+KPN10_geneList_chr <- KPN10_chr[,2]
+names(KPN10_geneList_chr) <- as.character(KPN10_chr[,1])
+KPN10_geneList_chr <- sort(KPN10_geneList_chr, decreasing=TRUE)
+KPN10_plas <- read.table("geneLists/KPN10_plasmids.tsv", sep="\t", header=FALSE)
+KPN10_geneList_plas <- KPN10_plas[,2]
+names(KPN10_geneList_plas) <- as.character(KPN10_plas[,1])
+KPN10_geneList_plas <- sort(KPN10_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+KPN10_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_KPN10_chr_BP.tsv", sep="\t", header=FALSE)
+KPN10_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_KPN10_chr_MF.tsv", sep="\t", header=FALSE)
+KPN10_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_KPN10_chr_CC.tsv", sep="\t", header=FALSE)
+KPN10_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_KPN10_plas_BP.tsv", sep="\t", header=FALSE)
+KPN10_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_KPN10_plas_MF.tsv", sep="\t", header=FALSE)
+KPN10_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_KPN10_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+KPN10_t2n_chr_BP <- read.table("TERM2NAME/KPN10_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN10_t2n_chr_MF <- read.table("TERM2NAME/KPN10_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN10_t2n_chr_CC <- read.table("TERM2NAME/KPN10_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+KPN10_t2n_plas_BP <- read.table("TERM2NAME/KPN10_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN10_t2n_plas_MF <- read.table("TERM2NAME/KPN10_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN10_t2n_plas_CC <- read.table("TERM2NAME/KPN10_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+KPN10_GSEA_chr_BP <- GSEA(KPN10_geneList_chr, TERM2GENE = KPN10_t2g_chr_BP, TERM2NAME = KPN10_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+KPN10_GSEA_chr_MF <- GSEA(KPN10_geneList_chr, TERM2GENE = KPN10_t2g_chr_MF, TERM2NAME = KPN10_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+KPN10_GSEA_chr_CC <- GSEA(KPN10_geneList_chr, TERM2GENE = KPN10_t2g_chr_CC, TERM2NAME = KPN10_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+KPN10_GSEA_plas_BP <- GSEA(KPN10_geneList_plas, TERM2GENE = KPN10_t2g_plas_BP, TERM2NAME = KPN10_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+KPN10_GSEA_plas_MF <- GSEA(KPN10_geneList_plas, TERM2GENE = KPN10_t2g_plas_MF, TERM2NAME = KPN10_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+KPN10_GSEA_plas_CC <- GSEA(KPN10_geneList_plas, TERM2GENE = KPN10_t2g_plas_CC, TERM2NAME = KPN10_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(KPN10_GSEA_plas_CC))
+```
+
+
+
+## KPN15
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+KPN15_chr <- read.table("geneLists/KPN15_chromosome.tsv", sep="\t", header=FALSE)
+KPN15_geneList_chr <- KPN15_chr[,2]
+names(KPN15_geneList_chr) <- as.character(KPN15_chr[,1])
+KPN15_geneList_chr <- sort(KPN15_geneList_chr, decreasing=TRUE)
+KPN15_plas <- read.table("geneLists/KPN15_plasmids.tsv", sep="\t", header=FALSE)
+KPN15_geneList_plas <- KPN15_plas[,2]
+names(KPN15_geneList_plas) <- as.character(KPN15_plas[,1])
+KPN15_geneList_plas <- sort(KPN15_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+KPN15_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_KPN15_chr_BP.tsv", sep="\t", header=FALSE)
+KPN15_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_KPN15_chr_MF.tsv", sep="\t", header=FALSE)
+KPN15_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_KPN15_chr_CC.tsv", sep="\t", header=FALSE)
+KPN15_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_KPN15_plas_BP.tsv", sep="\t", header=FALSE)
+KPN15_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_KPN15_plas_MF.tsv", sep="\t", header=FALSE)
+KPN15_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_KPN15_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+KPN15_t2n_chr_BP <- read.table("TERM2NAME/KPN15_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN15_t2n_chr_MF <- read.table("TERM2NAME/KPN15_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN15_t2n_chr_CC <- read.table("TERM2NAME/KPN15_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+KPN15_t2n_plas_BP <- read.table("TERM2NAME/KPN15_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN15_t2n_plas_MF <- read.table("TERM2NAME/KPN15_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN15_t2n_plas_CC <- read.table("TERM2NAME/KPN15_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+KPN15_GSEA_chr_BP <- GSEA(KPN15_geneList_chr, TERM2GENE = KPN15_t2g_chr_BP, TERM2NAME = KPN15_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+KPN15_GSEA_chr_MF <- GSEA(KPN15_geneList_chr, TERM2GENE = KPN15_t2g_chr_MF, TERM2NAME = KPN15_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+KPN15_GSEA_chr_CC <- GSEA(KPN15_geneList_chr, TERM2GENE = KPN15_t2g_chr_CC, TERM2NAME = KPN15_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+KPN15_GSEA_plas_BP <- GSEA(KPN15_geneList_plas, TERM2GENE = KPN15_t2g_plas_BP, TERM2NAME = KPN15_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+KPN15_GSEA_plas_MF <- GSEA(KPN15_geneList_plas, TERM2GENE = KPN15_t2g_plas_MF, TERM2NAME = KPN15_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+KPN15_GSEA_plas_CC <- GSEA(KPN15_geneList_plas, TERM2GENE = KPN15_t2g_plas_CC, TERM2NAME = KPN15_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(KPN15_GSEA_plas_CC))
+```
+
+
+
+## KPN18
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+KPN18_chr <- read.table("geneLists/KPN18_chromosome.tsv", sep="\t", header=FALSE)
+KPN18_geneList_chr <- KPN18_chr[,2]
+names(KPN18_geneList_chr) <- as.character(KPN18_chr[,1])
+KPN18_geneList_chr <- sort(KPN18_geneList_chr, decreasing=TRUE)
+KPN18_plas <- read.table("geneLists/KPN18_plasmids.tsv", sep="\t", header=FALSE)
+KPN18_geneList_plas <- KPN18_plas[,2]
+names(KPN18_geneList_plas) <- as.character(KPN18_plas[,1])
+KPN18_geneList_plas <- sort(KPN18_geneList_plas, decreasing=TRUE)
+
+# TERM2GENE
+KPN18_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_KPN18_chr_BP.tsv", sep="\t", header=FALSE)
+KPN18_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_KPN18_chr_MF.tsv", sep="\t", header=FALSE)
+KPN18_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_KPN18_chr_CC.tsv", sep="\t", header=FALSE)
+KPN18_t2g_plas_BP <- read.table("TERM2GENE/TERM2GENE_KPN18_plas_BP.tsv", sep="\t", header=FALSE)
+KPN18_t2g_plas_MF <- read.table("TERM2GENE/TERM2GENE_KPN18_plas_MF.tsv", sep="\t", header=FALSE)
+KPN18_t2g_plas_CC <- read.table("TERM2GENE/TERM2GENE_KPN18_plas_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+KPN18_t2n_chr_BP <- read.table("TERM2NAME/KPN18_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN18_t2n_chr_MF <- read.table("TERM2NAME/KPN18_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN18_t2n_chr_CC <- read.table("TERM2NAME/KPN18_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+KPN18_t2n_plas_BP <- read.table("TERM2NAME/KPN18_plasmids_BP.tsv", sep="\t", header=FALSE, quote="")
+KPN18_t2n_plas_MF <- read.table("TERM2NAME/KPN18_plasmids_MF.tsv", sep="\t", header=FALSE, quote="")
+KPN18_t2n_plas_CC <- read.table("TERM2NAME/KPN18_plasmids_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+KPN18_GSEA_chr_BP <- GSEA(KPN18_geneList_chr, TERM2GENE = KPN18_t2g_chr_BP, TERM2NAME = KPN18_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+KPN18_GSEA_chr_MF <- GSEA(KPN18_geneList_chr, TERM2GENE = KPN18_t2g_chr_MF, TERM2NAME = KPN18_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+KPN18_GSEA_chr_CC <- GSEA(KPN18_geneList_chr, TERM2GENE = KPN18_t2g_chr_CC, TERM2NAME = KPN18_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_chr_CC))
+# Plasmid genes - Biological Process
+KPN18_GSEA_plas_BP <- GSEA(KPN18_geneList_plas, TERM2GENE = KPN18_t2g_plas_BP, TERM2NAME = KPN18_t2n_plas_BP, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_plas_BP))
+# Plasmid genes - Molecular Function
+KPN18_GSEA_plas_MF <- GSEA(KPN18_geneList_plas, TERM2GENE = KPN18_t2g_plas_MF, TERM2NAME = KPN18_t2n_plas_MF, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_plas_MF))
+# Plasmid genes - Celullar Component
+KPN18_GSEA_plas_CC <- GSEA(KPN18_geneList_plas, TERM2GENE = KPN18_t2g_plas_CC, TERM2NAME = KPN18_t2n_plas_CC, seed=TRUE)
+nrow(as.data.frame(KPN18_GSEA_plas_CC))
+```
+
+
+
+## MG1655
+
+Loading gene lists and annotation files (TERM2GENE and TERM2NAME, separating by GO aspect), and ranking of gene lists based of log2FC.
+
+```{r, eval=TRUE}
+# Gene lists
+MG1655_chr <- read.table("geneLists/MG1655_chromosome.tsv", sep="\t", header=FALSE)
+MG1655_geneList_chr <- MG1655_chr[,2]
+names(MG1655_geneList_chr) <- as.character(MG1655_chr[,1])
+MG1655_geneList_chr <- sort(MG1655_geneList_chr, decreasing=TRUE)
+
+# TERM2GENE
+MG1655_t2g_chr_BP <- read.table("TERM2GENE/TERM2GENE_MG1655_chr_BP.tsv", sep="\t", header=FALSE)
+MG1655_t2g_chr_MF <- read.table("TERM2GENE/TERM2GENE_MG1655_chr_MF.tsv", sep="\t", header=FALSE)
+MG1655_t2g_chr_CC <- read.table("TERM2GENE/TERM2GENE_MG1655_chr_CC.tsv", sep="\t", header=FALSE)
+
+# TERM2NAME
+MG1655_t2n_chr_BP <- read.table("TERM2NAME/MG1655_chromosome_BP.tsv", sep="\t", header=FALSE, quote="")
+MG1655_t2n_chr_MF <- read.table("TERM2NAME/MG1655_chromosome_MF.tsv", sep="\t", header=FALSE, quote="")
+MG1655_t2n_chr_CC <- read.table("TERM2NAME/MG1655_chromosome_CC.tsv", sep="\t", header=FALSE, quote="")
+```
+
+Running GSEA with clusterProfiler with default parameters, except for 'seed' that is set to TRUE for reproducibility. Note that correction for multiple tests is performed with the Benjamini-Hochberg procedure.
+
+```{r, eval=TRUE}
+# Chromosomal genes - Biological Process
+MG1655_GSEA_chr_BP <- GSEA(MG1655_geneList_chr, TERM2GENE = MG1655_t2g_chr_BP, TERM2NAME = MG1655_t2n_chr_BP, seed=TRUE)
+nrow(as.data.frame(MG1655_GSEA_chr_BP))
+# Chromosomal genes - Molecular Function
+MG1655_GSEA_chr_MF <- GSEA(MG1655_geneList_chr, TERM2GENE = MG1655_t2g_chr_MF, TERM2NAME = MG1655_t2n_chr_MF, seed=TRUE)
+nrow(as.data.frame(MG1655_GSEA_chr_MF))
+# Chromosomal genes - Cellular Component
+MG1655_GSEA_chr_CC <- GSEA(MG1655_geneList_chr, TERM2GENE = MG1655_t2g_chr_CC, TERM2NAME = MG1655_t2n_chr_CC, seed=TRUE)
+nrow(as.data.frame(MG1655_GSEA_chr_CC))
+```
+
+
+
+
+
+
+# Comparing GSEA results from chromosomes between species
+
+## Biological Processes
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_chr_BP_edit <- as.data.frame(C325_GSEA_chr_BP)
+C325_GSEA_chr_BP_edit$count <- str_count(as.data.frame(C325_GSEA_chr_BP_edit)$core_enrichment, "cds")
+C325_GSEA_chr_BP_edit$geneRatio <- C325_GSEA_chr_BP_edit$count/C325_GSEA_chr_BP_edit$setSize
+# CF13
+CF13_GSEA_chr_BP_edit <- as.data.frame(CF13_GSEA_chr_BP)
+CF13_GSEA_chr_BP_edit$count <- str_count(as.data.frame(CF13_GSEA_chr_BP_edit)$core_enrichment, "cds")
+CF13_GSEA_chr_BP_edit$geneRatio <- CF13_GSEA_chr_BP_edit$count/CF13_GSEA_chr_BP_edit$setSize
+# H53
+H53_GSEA_chr_BP_edit <- as.data.frame(H53_GSEA_chr_BP)
+H53_GSEA_chr_BP_edit$count <- str_count(as.data.frame(H53_GSEA_chr_BP_edit)$core_enrichment, "cds")
+H53_GSEA_chr_BP_edit$geneRatio <- H53_GSEA_chr_BP_edit$count/H53_GSEA_chr_BP_edit$setSize
+# J57
+J57_GSEA_chr_BP_edit <- as.data.frame(J57_GSEA_chr_BP)
+J57_GSEA_chr_BP_edit$count <- str_count(as.data.frame(J57_GSEA_chr_BP_edit)$core_enrichment, "cds")
+J57_GSEA_chr_BP_edit$geneRatio <- J57_GSEA_chr_BP_edit$count/J57_GSEA_chr_BP_edit$setSize
+# K147
+K147_GSEA_chr_BP_edit <- as.data.frame(K147_GSEA_chr_BP)
+K147_GSEA_chr_BP_edit$count <- str_count(as.data.frame(K147_GSEA_chr_BP_edit)$core_enrichment, "cds")
+K147_GSEA_chr_BP_edit$geneRatio <- K147_GSEA_chr_BP_edit$count/K147_GSEA_chr_BP_edit$setSize
+# EC10
+EC10_GSEA_chr_BP_edit <- as.data.frame(EC10_GSEA_chr_BP)
+EC10_GSEA_chr_BP_edit$count <- str_count(as.data.frame(EC10_GSEA_chr_BP_edit)$core_enrichment, "cds")
+EC10_GSEA_chr_BP_edit$geneRatio <- EC10_GSEA_chr_BP_edit$count/EC10_GSEA_chr_BP_edit$setSize
+# KPN04
+KPN04_GSEA_chr_BP_edit <- as.data.frame(KPN04_GSEA_chr_BP)
+KPN04_GSEA_chr_BP_edit$count <- str_count(as.data.frame(KPN04_GSEA_chr_BP_edit)$core_enrichment, "cds")
+KPN04_GSEA_chr_BP_edit$geneRatio <- KPN04_GSEA_chr_BP_edit$count/KPN04_GSEA_chr_BP_edit$setSize
+# KPN07
+KPN07_GSEA_chr_BP_edit <- as.data.frame(KPN07_GSEA_chr_BP)
+KPN07_GSEA_chr_BP_edit$count <- str_count(as.data.frame(KPN07_GSEA_chr_BP_edit)$core_enrichment, "cds")
+KPN07_GSEA_chr_BP_edit$geneRatio <- KPN07_GSEA_chr_BP_edit$count/KPN07_GSEA_chr_BP_edit$setSize
+# KPN10
+KPN10_GSEA_chr_BP_edit <- as.data.frame(KPN10_GSEA_chr_BP)
+KPN10_GSEA_chr_BP_edit$count <- str_count(as.data.frame(KPN10_GSEA_chr_BP_edit)$core_enrichment, "cds")
+KPN10_GSEA_chr_BP_edit$geneRatio <- KPN10_GSEA_chr_BP_edit$count/KPN10_GSEA_chr_BP_edit$setSize
+# KPN15
+KPN15_GSEA_chr_BP_edit <- as.data.frame(KPN15_GSEA_chr_BP)
+KPN15_GSEA_chr_BP_edit$count <- str_count(as.data.frame(KPN15_GSEA_chr_BP_edit)$core_enrichment, "cds")
+KPN15_GSEA_chr_BP_edit$geneRatio <- KPN15_GSEA_chr_BP_edit$count/KPN15_GSEA_chr_BP_edit$setSize
+# KPN18
+KPN18_GSEA_chr_BP_edit <- as.data.frame(KPN18_GSEA_chr_BP)
+KPN18_GSEA_chr_BP_edit$count <- str_count(as.data.frame(KPN18_GSEA_chr_BP_edit)$core_enrichment, "cds")
+KPN18_GSEA_chr_BP_edit$geneRatio <- KPN18_GSEA_chr_BP_edit$count/KPN18_GSEA_chr_BP_edit$setSize
+# MG1655
+MG1655_GSEA_chr_BP_edit <- as.data.frame(MG1655_GSEA_chr_BP)
+MG1655_GSEA_chr_BP_edit$count <- str_count(as.data.frame(MG1655_GSEA_chr_BP_edit)$core_enrichment, "cds")
+MG1655_GSEA_chr_BP_edit$geneRatio <- MG1655_GSEA_chr_BP_edit$count/MG1655_GSEA_chr_BP_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_chr_BP <- list(C325_GSEA_chr_BP_edit, EC10_GSEA_chr_BP_edit, MG1655_GSEA_chr_BP_edit, CF13_GSEA_chr_BP_edit, J57_GSEA_chr_BP_edit, K147_GSEA_chr_BP_edit, KPN04_GSEA_chr_BP_edit, KPN07_GSEA_chr_BP_edit, KPN10_GSEA_chr_BP_edit, KPN18_GSEA_chr_BP_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_chr_BP) <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN04", "KPN07", "KPN10", "KPN18")
+for (i in 1:length(df_list_chr_BP)) {
+  if (nrow(df_list_chr_BP[[i]]) > 0) {
+    df_list_chr_BP[[i]]$Strain <- names(df_list_chr_BP)[i]
+  }
+}
+# Remove empty data frames
+df_list_chr_BP <- df_list_chr_BP[sapply(df_list_chr_BP, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_chr_BP <- do.call(rbind, df_list_chr_BP)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_BP.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_chr_BP$ID)), sep="\n")
+```
+
+Dotplot of GSEA results.
+
+```{r}
+# Set order of strains and GO descriptions, based on parental terms
+St_order_chr_BP <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN18", "KPN04", "KPN07", "KPN10")
+GO_order_chr_BP <- c("anaerobic respiration", "respiratory electron transport chain", "tricarboxylic acid cycle", "carbohydrate metabolic process", "carnitine metabolic process", "lipopolysaccharide biosynthetic process", "lipid A biosynthetic process", "histidine biosynthetic process", "arginine biosynthetic process", "isoleucine biosynthetic process", "thiamine biosynthetic process", "'de novo' IMP biosynthetic process", "glycolytic process", "aromatic compound catabolic process", "nitrate assimilation", "translation", "phosphorylation", "cell wall organization", "peptidoglycan biosynthetic process", "cytochrome complex assembly", "iron-sulfur cluster assembly", "bacterial-type flagellum assembly", "bacterial-type flagellum organization", "bacterial-type flagellum-dependent cell motility", "bacterial-type flagellum-dependent swarming motility", "chemotaxis", "signal transduction", "response to antibiotic", "DNA repair", "protein secretion", "protein secretion by the type II secretion system", "amino acid transport", "transmembrane transport", "phosphoenolpyruvate-dependent sugar phosphotransferase system", "regulation of DNA-templated transcription", "protein folding", "regulation of cell shape", "cell adhesion", "cell cycle", "cell division")
+
+plot_chr_BP <- ggplot(merged_df_chr_BP, aes(x = factor(Strain, level=St_order_chr_BP), y = factor(Description, level=GO_order_chr_BP))) +
+  geom_point(aes(color = as.numeric(p.adjust),
+                 size = ifelse(as.numeric(geneRatio) == 0, NA, as.numeric(geneRatio)))) +
+  scale_color_gradient(name = "p.adjust", limits=c(0,0.05)) +
+  scale_size_continuous(name = "Gene ratio",
+                        limits = c(min(merged_df_chr_BP$geneRatio, na.rm= TRUE),
+                                   max(merged_df_chr_BP$geneRatio, na.rm = TRUE)),
+                        breaks = seq(min(merged_df_chr_BP$geneRatio, na.rm = TRUE),
+                                      max(merged_df_chr_BP$geneRatio, na.rm = TRUE),
+                                      length.out=5),
+                        labels = label_number(accuracy=0.01)) +
+  scale_y_discrete(limits=rev) +
+  theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  facet_grid(~NES > 0, scales="free_y", labeller=as_labeller(c(`FALSE`="Downregulated", `TRUE`="Upregulated")))
+plot_chr_BP
+```
+
+
+## Molecular Functions
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_chr_MF_edit <- as.data.frame(C325_GSEA_chr_MF)
+C325_GSEA_chr_MF_edit$count <- str_count(as.data.frame(C325_GSEA_chr_MF_edit)$core_enrichment, "cds")
+C325_GSEA_chr_MF_edit$geneRatio <- C325_GSEA_chr_MF_edit$count/C325_GSEA_chr_MF_edit$setSize
+# CF13
+CF13_GSEA_chr_MF_edit <- as.data.frame(CF13_GSEA_chr_MF)
+CF13_GSEA_chr_MF_edit$count <- str_count(as.data.frame(CF13_GSEA_chr_MF_edit)$core_enrichment, "cds")
+CF13_GSEA_chr_MF_edit$geneRatio <- CF13_GSEA_chr_MF_edit$count/CF13_GSEA_chr_MF_edit$setSize
+# H53
+H53_GSEA_chr_MF_edit <- as.data.frame(H53_GSEA_chr_MF)
+H53_GSEA_chr_MF_edit$count <- str_count(as.data.frame(H53_GSEA_chr_MF_edit)$core_enrichment, "cds")
+H53_GSEA_chr_MF_edit$geneRatio <- H53_GSEA_chr_MF_edit$count/H53_GSEA_chr_MF_edit$setSize
+# J57
+J57_GSEA_chr_MF_edit <- as.data.frame(J57_GSEA_chr_MF)
+J57_GSEA_chr_MF_edit$count <- str_count(as.data.frame(J57_GSEA_chr_MF_edit)$core_enrichment, "cds")
+J57_GSEA_chr_MF_edit$geneRatio <- J57_GSEA_chr_MF_edit$count/J57_GSEA_chr_MF_edit$setSize
+# K147
+K147_GSEA_chr_MF_edit <- as.data.frame(K147_GSEA_chr_MF)
+K147_GSEA_chr_MF_edit$count <- str_count(as.data.frame(K147_GSEA_chr_MF_edit)$core_enrichment, "cds")
+K147_GSEA_chr_MF_edit$geneRatio <- K147_GSEA_chr_MF_edit$count/K147_GSEA_chr_MF_edit$setSize
+# EC10
+EC10_GSEA_chr_MF_edit <- as.data.frame(EC10_GSEA_chr_MF)
+EC10_GSEA_chr_MF_edit$count <- str_count(as.data.frame(EC10_GSEA_chr_MF_edit)$core_enrichment, "cds")
+EC10_GSEA_chr_MF_edit$geneRatio <- EC10_GSEA_chr_MF_edit$count/EC10_GSEA_chr_MF_edit$setSize
+# KPN04
+KPN04_GSEA_chr_MF_edit <- as.data.frame(KPN04_GSEA_chr_MF)
+KPN04_GSEA_chr_MF_edit$count <- str_count(as.data.frame(KPN04_GSEA_chr_MF_edit)$core_enrichment, "cds")
+KPN04_GSEA_chr_MF_edit$geneRatio <- KPN04_GSEA_chr_MF_edit$count/KPN04_GSEA_chr_MF_edit$setSize
+# KPN07
+KPN07_GSEA_chr_MF_edit <- as.data.frame(KPN07_GSEA_chr_MF)
+KPN07_GSEA_chr_MF_edit$count <- str_count(as.data.frame(KPN07_GSEA_chr_MF_edit)$core_enrichment, "cds")
+KPN07_GSEA_chr_MF_edit$geneRatio <- KPN07_GSEA_chr_MF_edit$count/KPN07_GSEA_chr_MF_edit$setSize
+# KPN10
+KPN10_GSEA_chr_MF_edit <- as.data.frame(KPN10_GSEA_chr_MF)
+KPN10_GSEA_chr_MF_edit$count <- str_count(as.data.frame(KPN10_GSEA_chr_MF_edit)$core_enrichment, "cds")
+KPN10_GSEA_chr_MF_edit$geneRatio <- KPN10_GSEA_chr_MF_edit$count/KPN10_GSEA_chr_MF_edit$setSize
+# KPN15
+KPN15_GSEA_chr_MF_edit <- as.data.frame(KPN15_GSEA_chr_MF)
+KPN15_GSEA_chr_MF_edit$count <- str_count(as.data.frame(KPN15_GSEA_chr_MF_edit)$core_enrichment, "cds")
+KPN15_GSEA_chr_MF_edit$geneRatio <- KPN15_GSEA_chr_MF_edit$count/KPN15_GSEA_chr_MF_edit$setSize
+# KPN18
+KPN18_GSEA_chr_MF_edit <- as.data.frame(KPN18_GSEA_chr_MF)
+KPN18_GSEA_chr_MF_edit$count <- str_count(as.data.frame(KPN18_GSEA_chr_MF_edit)$core_enrichment, "cds")
+KPN18_GSEA_chr_MF_edit$geneRatio <- KPN18_GSEA_chr_MF_edit$count/KPN18_GSEA_chr_MF_edit$setSize
+# MG1655
+MG1655_GSEA_chr_MF_edit <- as.data.frame(MG1655_GSEA_chr_MF)
+MG1655_GSEA_chr_MF_edit$count <- str_count(as.data.frame(MG1655_GSEA_chr_MF_edit)$core_enrichment, "cds")
+MG1655_GSEA_chr_MF_edit$geneRatio <- MG1655_GSEA_chr_MF_edit$count/MG1655_GSEA_chr_MF_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_chr_MF <- list(C325_GSEA_chr_MF_edit, EC10_GSEA_chr_MF_edit, MG1655_GSEA_chr_MF_edit, CF13_GSEA_chr_MF_edit, J57_GSEA_chr_MF_edit, K147_GSEA_chr_MF_edit, KPN07_GSEA_chr_MF_edit, KPN10_GSEA_chr_MF_edit, KPN15_GSEA_chr_MF_edit, KPN18_GSEA_chr_MF_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_chr_MF) <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN07", "KPN10", "KPN15", "KPN18")
+for (i in 1:length(df_list_chr_MF)) {
+  if (nrow(df_list_chr_MF[[i]]) > 0) {
+    df_list_chr_MF[[i]]$Strain <- names(df_list_chr_MF)[i]
+  }
+}
+# Remove empty data frames
+df_list_chr_MF <- df_list_chr_MF[sapply(df_list_chr_MF, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_chr_MF <- do.call(rbind, df_list_chr_MF)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_MF.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_chr_MF$ID)), sep="\n")
+```
+
+Dotplot of GSEA results.
+
+```{r}
+# Set order of strains and GO descriptions, based on parental terms
+St_order_chr_MF <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN15", "KPN18", "KPN07", "KPN10")
+GO_order_chr_MF <- c("GTPase activity", "hydrolase activity, hydrolyzing O-glycosyl compounds", "kinase activity", "NADH dehydrogenase (ubiquinone) activity", "oxidoreductase activity", "oxidoreductase activity, acting on the CH-OH group of donors, NAD or NADP as acceptor", "phosphorelay sensor kinase activity", "transaminase activity", "protein-N(PI)-phosphohistidine-sugar phosphotransferase activity", "electron transfer activity", "DNA helicase activity", "ATP hydrolysis activity", "nucleotide binding", "ATP binding", "GTP binding", "NAD binding", "NADP binding", "nucleic acid binding", "DNA binding", "RNA binding", "rRNA binding", "tRNA binding", "sequence-specific DNA binding", "transcription cis-regulatory region binding", "translation elongation factor activity", "structural constituent of ribosome", "structural molecule activity", "porin activity", "transmembrane transporter activity", "metal ion binding", "nickel cation binding", "pyridoxal phosphate binding", "zinc ion binding", "4 iron, 4 sulfur cluster binding", "iron-sulfur cluster binding", "heme binding", "cytoskeletal motor activity", "unfolded protein binding", "quinone binding", "DNA-binding transcription factor activity", "carbohydrate binding")
+
+plot_chr_MF <- ggplot(merged_df_chr_MF, aes(x = factor(Strain, level=St_order_chr_MF), y = factor(Description, level=GO_order_chr_MF))) +
+  geom_point(aes(color = as.numeric(p.adjust),
+                 size = ifelse(as.numeric(geneRatio) == 0, NA, as.numeric(geneRatio)))) +
+  scale_color_gradient(name = "p.adjust", limits=c(0,0.05)) +
+  scale_size_continuous(name = "Gene ratio",
+                        limits = c(min(merged_df_chr_MF$geneRatio, na.rm= TRUE),
+                                   max(merged_df_chr_MF$geneRatio, na.rm = TRUE)),
+                        breaks = seq(min(merged_df_chr_MF$geneRatio, na.rm = TRUE),
+                                      max(merged_df_chr_MF$geneRatio, na.rm = TRUE),
+                                      length.out=5),
+                        labels = label_number(accuracy=0.01)) +
+  scale_y_discrete(limits=rev) +
+  theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  facet_grid(~NES > 0, scales="free_y", labeller=as_labeller(c(`FALSE`="Downregulated", `TRUE`="Upregulated")))
+plot_chr_MF
+```
+
+
+## Cellular Components
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_chr_CC_edit <- as.data.frame(C325_GSEA_chr_CC)
+C325_GSEA_chr_CC_edit$count <- str_count(as.data.frame(C325_GSEA_chr_CC_edit)$core_enrichment, "cds")
+C325_GSEA_chr_CC_edit$geneRatio <- C325_GSEA_chr_CC_edit$count/C325_GSEA_chr_CC_edit$setSize
+# CF13
+CF13_GSEA_chr_CC_edit <- as.data.frame(CF13_GSEA_chr_CC)
+CF13_GSEA_chr_CC_edit$count <- str_count(as.data.frame(CF13_GSEA_chr_CC_edit)$core_enrichment, "cds")
+CF13_GSEA_chr_CC_edit$geneRatio <- CF13_GSEA_chr_CC_edit$count/CF13_GSEA_chr_CC_edit$setSize
+# H53
+H53_GSEA_chr_CC_edit <- as.data.frame(H53_GSEA_chr_CC)
+H53_GSEA_chr_CC_edit$count <- str_count(as.data.frame(H53_GSEA_chr_CC_edit)$core_enrichment, "cds")
+H53_GSEA_chr_CC_edit$geneRatio <- H53_GSEA_chr_CC_edit$count/H53_GSEA_chr_CC_edit$setSize
+# J57
+J57_GSEA_chr_CC_edit <- as.data.frame(J57_GSEA_chr_CC)
+J57_GSEA_chr_CC_edit$count <- str_count(as.data.frame(J57_GSEA_chr_CC_edit)$core_enrichment, "cds")
+J57_GSEA_chr_CC_edit$geneRatio <- J57_GSEA_chr_CC_edit$count/J57_GSEA_chr_CC_edit$setSize
+# K147
+K147_GSEA_chr_CC_edit <- as.data.frame(K147_GSEA_chr_CC)
+K147_GSEA_chr_CC_edit$count <- str_count(as.data.frame(K147_GSEA_chr_CC_edit)$core_enrichment, "cds")
+K147_GSEA_chr_CC_edit$geneRatio <- K147_GSEA_chr_CC_edit$count/K147_GSEA_chr_CC_edit$setSize
+# EC10
+EC10_GSEA_chr_CC_edit <- as.data.frame(EC10_GSEA_chr_CC)
+EC10_GSEA_chr_CC_edit$count <- str_count(as.data.frame(EC10_GSEA_chr_CC_edit)$core_enrichment, "cds")
+EC10_GSEA_chr_CC_edit$geneRatio <- EC10_GSEA_chr_CC_edit$count/EC10_GSEA_chr_CC_edit$setSize
+# KPN04
+KPN04_GSEA_chr_CC_edit <- as.data.frame(KPN04_GSEA_chr_CC)
+KPN04_GSEA_chr_CC_edit$count <- str_count(as.data.frame(KPN04_GSEA_chr_CC_edit)$core_enrichment, "cds")
+KPN04_GSEA_chr_CC_edit$geneRatio <- KPN04_GSEA_chr_CC_edit$count/KPN04_GSEA_chr_CC_edit$setSize
+# KPN07
+KPN07_GSEA_chr_CC_edit <- as.data.frame(KPN07_GSEA_chr_CC)
+KPN07_GSEA_chr_CC_edit$count <- str_count(as.data.frame(KPN07_GSEA_chr_CC_edit)$core_enrichment, "cds")
+KPN07_GSEA_chr_CC_edit$geneRatio <- KPN07_GSEA_chr_CC_edit$count/KPN07_GSEA_chr_CC_edit$setSize
+# KPN10
+KPN10_GSEA_chr_CC_edit <- as.data.frame(KPN10_GSEA_chr_CC)
+KPN10_GSEA_chr_CC_edit$count <- str_count(as.data.frame(KPN10_GSEA_chr_CC_edit)$core_enrichment, "cds")
+KPN10_GSEA_chr_CC_edit$geneRatio <- KPN10_GSEA_chr_CC_edit$count/KPN10_GSEA_chr_CC_edit$setSize
+# KPN15
+KPN15_GSEA_chr_CC_edit <- as.data.frame(KPN15_GSEA_chr_CC)
+KPN15_GSEA_chr_CC_edit$count <- str_count(as.data.frame(KPN15_GSEA_chr_CC_edit)$core_enrichment, "cds")
+KPN15_GSEA_chr_CC_edit$geneRatio <- KPN15_GSEA_chr_CC_edit$count/KPN15_GSEA_chr_CC_edit$setSize
+# KPN18
+KPN18_GSEA_chr_CC_edit <- as.data.frame(KPN18_GSEA_chr_CC)
+KPN18_GSEA_chr_CC_edit$count <- str_count(as.data.frame(KPN18_GSEA_chr_CC_edit)$core_enrichment, "cds")
+KPN18_GSEA_chr_CC_edit$geneRatio <- KPN18_GSEA_chr_CC_edit$count/KPN18_GSEA_chr_CC_edit$setSize
+# MG1655
+MG1655_GSEA_chr_CC_edit <- as.data.frame(MG1655_GSEA_chr_CC)
+MG1655_GSEA_chr_CC_edit$count <- str_count(as.data.frame(MG1655_GSEA_chr_CC_edit)$core_enrichment, "cds")
+MG1655_GSEA_chr_CC_edit$geneRatio <- MG1655_GSEA_chr_CC_edit$count/MG1655_GSEA_chr_CC_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_chr_CC <- list(C325_GSEA_chr_CC_edit, EC10_GSEA_chr_CC_edit, MG1655_GSEA_chr_CC_edit, CF13_GSEA_chr_CC_edit, J57_GSEA_chr_CC_edit, K147_GSEA_chr_CC_edit, KPN04_GSEA_chr_CC_edit, KPN07_GSEA_chr_CC_edit, KPN10_GSEA_chr_CC_edit, KPN15_GSEA_chr_CC_edit, KPN18_GSEA_chr_CC_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_chr_CC) <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN04", "KPN07", "KPN10", "KPN15", "KPN18")
+for (i in 1:length(df_list_chr_CC)) {
+  if (nrow(df_list_chr_CC[[i]]) > 0) {
+    df_list_chr_CC[[i]]$Strain <- names(df_list_chr_CC)[i]
+  }
+}
+# Remove empty data frames
+df_list_chr_CC <- df_list_chr_CC[sapply(df_list_chr_CC, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_chr_CC <- do.call(rbind, df_list_chr_CC)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_CC.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_chr_CC$ID)), sep="\n")
+```
+
+Dotplot of GSEA results.
+
+```{r}
+# Set order of strains and GO descriptions, based on parental terms
+St_order_chr_CC <- c("C325", "EC10", "MG1655", "CF13", "J57", "K147", "KPN15", "KPN18", "KPN04", "KPN07", "KPN10")
+GO_order_chr_CC <- c("bacterial-type flagellum", "bacterial-type flagellum basal body", "pilus", "extracellular region", "cell outer membrane", "membrane", "periplasmic space", "cytoplasm", "bacterial microcompartment", "ribosome", "ATP-binding cassette (ABC) transporter complex", "ATP-binding cassette (ABC) transporter complex, substrate-binding subunit-containing", "pore complex", "ribonucleoprotein complex", "type II protein secretion system complex", "transmembrane transporter complex")
+
+plot_chr_CC <- ggplot(merged_df_chr_CC, aes(x = factor(Strain, level=St_order_chr_CC), y = factor(Description, level=GO_order_chr_CC))) +
+  geom_point(aes(color = as.numeric(p.adjust),
+                 size = ifelse(as.numeric(geneRatio) == 0, NA, as.numeric(geneRatio)))) +
+  scale_color_gradient(name = "p.adjust", limits=c(0,0.05)) +
+  scale_size_continuous(name = "Gene ratio",
+                        limits = c(min(merged_df_chr_CC$geneRatio, na.rm= TRUE),
+                                   max(merged_df_chr_CC$geneRatio, na.rm = TRUE)),
+                        breaks = seq(min(merged_df_chr_CC$geneRatio, na.rm = TRUE),
+                                      max(merged_df_chr_CC$geneRatio, na.rm = TRUE),
+                                      length.out=5),
+                        labels = label_number(accuracy=0.01)) +
+  scale_y_discrete(limits=rev) +
+  theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  facet_grid(~NES > 0, scales="free_y", labeller=as_labeller(c(`FALSE`="Downregulated", `TRUE`="Upregulated")))
+plot_chr_CC
+```
+
+
+
+
+# Comparing GSEA results from plasmids between species
+
+## Biological Processes
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_plas_BP_edit <- as.data.frame(C325_GSEA_plas_BP)
+C325_GSEA_plas_BP_edit$count <- str_count(as.data.frame(C325_GSEA_plas_BP_edit)$core_enrichment, "cds")
+C325_GSEA_plas_BP_edit$geneRatio <- C325_GSEA_plas_BP_edit$count/C325_GSEA_plas_BP_edit$setSize
+# CF13
+CF13_GSEA_plas_BP_edit <- as.data.frame(CF13_GSEA_plas_BP)
+CF13_GSEA_plas_BP_edit$count <- str_count(as.data.frame(CF13_GSEA_plas_BP_edit)$core_enrichment, "cds")
+CF13_GSEA_plas_BP_edit$geneRatio <- CF13_GSEA_plas_BP_edit$count/CF13_GSEA_plas_BP_edit$setSize
+# H53
+H53_GSEA_plas_BP_edit <- as.data.frame(H53_GSEA_plas_BP)
+H53_GSEA_plas_BP_edit$count <- str_count(as.data.frame(H53_GSEA_plas_BP_edit)$core_enrichment, "cds")
+H53_GSEA_plas_BP_edit$geneRatio <- H53_GSEA_plas_BP_edit$count/H53_GSEA_plas_BP_edit$setSize
+# J57
+J57_GSEA_plas_BP_edit <- as.data.frame(J57_GSEA_plas_BP)
+J57_GSEA_plas_BP_edit$count <- str_count(as.data.frame(J57_GSEA_plas_BP_edit)$core_enrichment, "cds")
+J57_GSEA_plas_BP_edit$geneRatio <- J57_GSEA_plas_BP_edit$count/J57_GSEA_plas_BP_edit$setSize
+# K147
+K147_GSEA_plas_BP_edit <- as.data.frame(K147_GSEA_plas_BP)
+K147_GSEA_plas_BP_edit$count <- str_count(as.data.frame(K147_GSEA_plas_BP_edit)$core_enrichment, "cds")
+K147_GSEA_plas_BP_edit$geneRatio <- K147_GSEA_plas_BP_edit$count/K147_GSEA_plas_BP_edit$setSize
+# EC10
+EC10_GSEA_plas_BP_edit <- as.data.frame(EC10_GSEA_plas_BP)
+EC10_GSEA_plas_BP_edit$count <- str_count(as.data.frame(EC10_GSEA_plas_BP_edit)$core_enrichment, "cds")
+EC10_GSEA_plas_BP_edit$geneRatio <- EC10_GSEA_plas_BP_edit$count/EC10_GSEA_plas_BP_edit$setSize
+# KPN04
+KPN04_GSEA_plas_BP_edit <- as.data.frame(KPN04_GSEA_plas_BP)
+KPN04_GSEA_plas_BP_edit$count <- str_count(as.data.frame(KPN04_GSEA_plas_BP_edit)$core_enrichment, "cds")
+KPN04_GSEA_plas_BP_edit$geneRatio <- KPN04_GSEA_plas_BP_edit$count/KPN04_GSEA_plas_BP_edit$setSize
+# KPN07
+KPN07_GSEA_plas_BP_edit <- as.data.frame(KPN07_GSEA_plas_BP)
+KPN07_GSEA_plas_BP_edit$count <- str_count(as.data.frame(KPN07_GSEA_plas_BP_edit)$core_enrichment, "cds")
+KPN07_GSEA_plas_BP_edit$geneRatio <- KPN07_GSEA_plas_BP_edit$count/KPN07_GSEA_plas_BP_edit$setSize
+# KPN10
+KPN10_GSEA_plas_BP_edit <- as.data.frame(KPN10_GSEA_plas_BP)
+KPN10_GSEA_plas_BP_edit$count <- str_count(as.data.frame(KPN10_GSEA_plas_BP_edit)$core_enrichment, "cds")
+KPN10_GSEA_plas_BP_edit$geneRatio <- KPN10_GSEA_plas_BP_edit$count/KPN10_GSEA_plas_BP_edit$setSize
+# KPN15
+KPN15_GSEA_plas_BP_edit <- as.data.frame(KPN15_GSEA_plas_BP)
+KPN15_GSEA_plas_BP_edit$count <- str_count(as.data.frame(KPN15_GSEA_plas_BP_edit)$core_enrichment, "cds")
+KPN15_GSEA_plas_BP_edit$geneRatio <- KPN15_GSEA_plas_BP_edit$count/KPN15_GSEA_plas_BP_edit$setSize
+# KPN18
+KPN18_GSEA_plas_BP_edit <- as.data.frame(KPN18_GSEA_plas_BP)
+KPN18_GSEA_plas_BP_edit$count <- str_count(as.data.frame(KPN18_GSEA_plas_BP_edit)$core_enrichment, "cds")
+KPN18_GSEA_plas_BP_edit$geneRatio <- KPN18_GSEA_plas_BP_edit$count/KPN18_GSEA_plas_BP_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_plas_BP <- list(J57_GSEA_plas_BP_edit, KPN07_GSEA_plas_BP_edit, KPN10_GSEA_plas_BP_edit, KPN15_GSEA_plas_BP_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_plas_BP) <- c("J57", "KPN07", "KPN10", "KPN15")
+for (i in 1:length(df_list_plas_BP)) {
+  if (nrow(df_list_plas_BP[[i]]) > 0) {
+    df_list_plas_BP[[i]]$Strain <- names(df_list_plas_BP)[i]
+  }
+}
+# Remove empty data frames
+df_list_plas_BP <- df_list_plas_BP[sapply(df_list_plas_BP, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_plas_BP <- do.call(rbind, df_list_plas_BP)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_BP.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_plas_BP$ID)), sep="\n")
+```
+
+
+## Molecular Functions
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_plas_MF_edit <- as.data.frame(C325_GSEA_plas_MF)
+C325_GSEA_plas_MF_edit$count <- str_count(as.data.frame(C325_GSEA_plas_MF_edit)$core_enrichment, "cds")
+C325_GSEA_plas_MF_edit$geneRatio <- C325_GSEA_plas_MF_edit$count/C325_GSEA_plas_MF_edit$setSize
+# CF13
+CF13_GSEA_plas_MF_edit <- as.data.frame(CF13_GSEA_plas_MF)
+CF13_GSEA_plas_MF_edit$count <- str_count(as.data.frame(CF13_GSEA_plas_MF_edit)$core_enrichment, "cds")
+CF13_GSEA_plas_MF_edit$geneRatio <- CF13_GSEA_plas_MF_edit$count/CF13_GSEA_plas_MF_edit$setSize
+# H53
+H53_GSEA_plas_MF_edit <- as.data.frame(H53_GSEA_plas_MF)
+H53_GSEA_plas_MF_edit$count <- str_count(as.data.frame(H53_GSEA_plas_MF_edit)$core_enrichment, "cds")
+H53_GSEA_plas_MF_edit$geneRatio <- H53_GSEA_plas_MF_edit$count/H53_GSEA_plas_MF_edit$setSize
+# J57
+J57_GSEA_plas_MF_edit <- as.data.frame(J57_GSEA_plas_MF)
+J57_GSEA_plas_MF_edit$count <- str_count(as.data.frame(J57_GSEA_plas_MF_edit)$core_enrichment, "cds")
+J57_GSEA_plas_MF_edit$geneRatio <- J57_GSEA_plas_MF_edit$count/J57_GSEA_plas_MF_edit$setSize
+# K147
+K147_GSEA_plas_MF_edit <- as.data.frame(K147_GSEA_plas_MF)
+K147_GSEA_plas_MF_edit$count <- str_count(as.data.frame(K147_GSEA_plas_MF_edit)$core_enrichment, "cds")
+K147_GSEA_plas_MF_edit$geneRatio <- K147_GSEA_plas_MF_edit$count/K147_GSEA_plas_MF_edit$setSize
+# EC10
+EC10_GSEA_plas_MF_edit <- as.data.frame(EC10_GSEA_plas_MF)
+EC10_GSEA_plas_MF_edit$count <- str_count(as.data.frame(EC10_GSEA_plas_MF_edit)$core_enrichment, "cds")
+EC10_GSEA_plas_MF_edit$geneRatio <- EC10_GSEA_plas_MF_edit$count/EC10_GSEA_plas_MF_edit$setSize
+# KPN04
+KPN04_GSEA_plas_MF_edit <- as.data.frame(KPN04_GSEA_plas_MF)
+KPN04_GSEA_plas_MF_edit$count <- str_count(as.data.frame(KPN04_GSEA_plas_MF_edit)$core_enrichment, "cds")
+KPN04_GSEA_plas_MF_edit$geneRatio <- KPN04_GSEA_plas_MF_edit$count/KPN04_GSEA_plas_MF_edit$setSize
+# KPN07
+KPN07_GSEA_plas_MF_edit <- as.data.frame(KPN07_GSEA_plas_MF)
+KPN07_GSEA_plas_MF_edit$count <- str_count(as.data.frame(KPN07_GSEA_plas_MF_edit)$core_enrichment, "cds")
+KPN07_GSEA_plas_MF_edit$geneRatio <- KPN07_GSEA_plas_MF_edit$count/KPN07_GSEA_plas_MF_edit$setSize
+# KPN10
+KPN10_GSEA_plas_MF_edit <- as.data.frame(KPN10_GSEA_plas_MF)
+KPN10_GSEA_plas_MF_edit$count <- str_count(as.data.frame(KPN10_GSEA_plas_MF_edit)$core_enrichment, "cds")
+KPN10_GSEA_plas_MF_edit$geneRatio <- KPN10_GSEA_plas_MF_edit$count/KPN10_GSEA_plas_MF_edit$setSize
+# KPN15
+KPN15_GSEA_plas_MF_edit <- as.data.frame(KPN15_GSEA_plas_MF)
+KPN15_GSEA_plas_MF_edit$count <- str_count(as.data.frame(KPN15_GSEA_plas_MF_edit)$core_enrichment, "cds")
+KPN15_GSEA_plas_MF_edit$geneRatio <- KPN15_GSEA_plas_MF_edit$count/KPN15_GSEA_plas_MF_edit$setSize
+# KPN18
+KPN18_GSEA_plas_MF_edit <- as.data.frame(KPN18_GSEA_plas_MF)
+KPN18_GSEA_plas_MF_edit$count <- str_count(as.data.frame(KPN18_GSEA_plas_MF_edit)$core_enrichment, "cds")
+KPN18_GSEA_plas_MF_edit$geneRatio <- KPN18_GSEA_plas_MF_edit$count/KPN18_GSEA_plas_MF_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_plas_MF <- list(J57_GSEA_plas_MF_edit, KPN07_GSEA_plas_MF_edit, KPN10_GSEA_plas_MF_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_plas_MF) <- c("J57", "KPN07", "KPN10")
+for (i in 1:length(df_list_plas_MF)) {
+  if (nrow(df_list_plas_MF[[i]]) > 0) {
+    df_list_plas_MF[[i]]$Strain <- names(df_list_plas_MF)[i]
+  }
+}
+# Remove empty data frames
+df_list_plas_MF <- df_list_plas_MF[sapply(df_list_plas_MF, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_plas_MF <- do.call(rbind, df_list_plas_MF)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_MF.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_plas_MF$ID)), sep="\n")
+```
+
+
+## Cellular Components
+
+Adding 'count' and a 'geneRatio' columns. Count is the count of core enrichment genes, and gene ratio is the ratio (count of core enrichment genes) / (count of pathway genes).
+
+```{r}
+# C325
+C325_GSEA_plas_CC_edit <- as.data.frame(C325_GSEA_plas_CC)
+C325_GSEA_plas_CC_edit$count <- str_count(as.data.frame(C325_GSEA_plas_CC_edit)$core_enrichment, "cds")
+C325_GSEA_plas_CC_edit$geneRatio <- C325_GSEA_plas_CC_edit$count/C325_GSEA_plas_CC_edit$setSize
+# CF13
+CF13_GSEA_plas_CC_edit <- as.data.frame(CF13_GSEA_plas_CC)
+CF13_GSEA_plas_CC_edit$count <- str_count(as.data.frame(CF13_GSEA_plas_CC_edit)$core_enrichment, "cds")
+CF13_GSEA_plas_CC_edit$geneRatio <- CF13_GSEA_plas_CC_edit$count/CF13_GSEA_plas_CC_edit$setSize
+# H53
+H53_GSEA_plas_CC_edit <- as.data.frame(H53_GSEA_plas_CC)
+H53_GSEA_plas_CC_edit$count <- str_count(as.data.frame(H53_GSEA_plas_CC_edit)$core_enrichment, "cds")
+H53_GSEA_plas_CC_edit$geneRatio <- H53_GSEA_plas_CC_edit$count/H53_GSEA_plas_CC_edit$setSize
+# J57
+J57_GSEA_plas_CC_edit <- as.data.frame(J57_GSEA_plas_CC)
+J57_GSEA_plas_CC_edit$count <- str_count(as.data.frame(J57_GSEA_plas_CC_edit)$core_enrichment, "cds")
+J57_GSEA_plas_CC_edit$geneRatio <- J57_GSEA_plas_CC_edit$count/J57_GSEA_plas_CC_edit$setSize
+# K147
+K147_GSEA_plas_CC_edit <- as.data.frame(K147_GSEA_plas_CC)
+K147_GSEA_plas_CC_edit$count <- str_count(as.data.frame(K147_GSEA_plas_CC_edit)$core_enrichment, "cds")
+K147_GSEA_plas_CC_edit$geneRatio <- K147_GSEA_plas_CC_edit$count/K147_GSEA_plas_CC_edit$setSize
+# EC10
+EC10_GSEA_plas_CC_edit <- as.data.frame(EC10_GSEA_plas_CC)
+EC10_GSEA_plas_CC_edit$count <- str_count(as.data.frame(EC10_GSEA_plas_CC_edit)$core_enrichment, "cds")
+EC10_GSEA_plas_CC_edit$geneRatio <- EC10_GSEA_plas_CC_edit$count/EC10_GSEA_plas_CC_edit$setSize
+# KPN04
+KPN04_GSEA_plas_CC_edit <- as.data.frame(KPN04_GSEA_plas_CC)
+KPN04_GSEA_plas_CC_edit$count <- str_count(as.data.frame(KPN04_GSEA_plas_CC_edit)$core_enrichment, "cds")
+KPN04_GSEA_plas_CC_edit$geneRatio <- KPN04_GSEA_plas_CC_edit$count/KPN04_GSEA_plas_CC_edit$setSize
+# KPN07
+KPN07_GSEA_plas_CC_edit <- as.data.frame(KPN07_GSEA_plas_CC)
+KPN07_GSEA_plas_CC_edit$count <- str_count(as.data.frame(KPN07_GSEA_plas_CC_edit)$core_enrichment, "cds")
+KPN07_GSEA_plas_CC_edit$geneRatio <- KPN07_GSEA_plas_CC_edit$count/KPN07_GSEA_plas_CC_edit$setSize
+# KPN10
+KPN10_GSEA_plas_CC_edit <- as.data.frame(KPN10_GSEA_plas_CC)
+KPN10_GSEA_plas_CC_edit$count <- str_count(as.data.frame(KPN10_GSEA_plas_CC_edit)$core_enrichment, "cds")
+KPN10_GSEA_plas_CC_edit$geneRatio <- KPN10_GSEA_plas_CC_edit$count/KPN10_GSEA_plas_CC_edit$setSize
+# KPN15
+KPN15_GSEA_plas_CC_edit <- as.data.frame(KPN15_GSEA_plas_CC)
+KPN15_GSEA_plas_CC_edit$count <- str_count(as.data.frame(KPN15_GSEA_plas_CC_edit)$core_enrichment, "cds")
+KPN15_GSEA_plas_CC_edit$geneRatio <- KPN15_GSEA_plas_CC_edit$count/KPN15_GSEA_plas_CC_edit$setSize
+# KPN18
+KPN18_GSEA_plas_CC_edit <- as.data.frame(KPN18_GSEA_plas_CC)
+KPN18_GSEA_plas_CC_edit$count <- str_count(as.data.frame(KPN18_GSEA_plas_CC_edit)$core_enrichment, "cds")
+KPN18_GSEA_plas_CC_edit$geneRatio <- KPN18_GSEA_plas_CC_edit$count/KPN18_GSEA_plas_CC_edit$setSize
+```
+
+Merging the data frames into a single data frame, indicating strain name.
+
+```{r}
+df_list_plas_CC <- list(EC10_GSEA_plas_CC_edit)
+
+# Create a new column named 'Strain' in each non-empty data frame indicating the source
+names(df_list_plas_CC) <- c("EC10")
+for (i in 1:length(df_list_plas_CC)) {
+  if (nrow(df_list_plas_CC[[i]]) > 0) {
+    df_list_plas_CC[[i]]$Strain <- names(df_list_plas_CC)[i]
+  }
+}
+# Remove empty data frames
+df_list_plas_CC <- df_list_plas_CC[sapply(df_list_plas_CC, nrow) > 0]
+# Merge the data frames into a single data frame
+merged_df_plas_CC <- do.call(rbind, df_list_plas_CC)
+
+# Get the GO IDs to find parental terms in QuickGO (enriched_GOs_parental_CC.tsv),
+# which will be used to order the GO descriptions in the following dotplot
+cat(noquote(unique(merged_df_plas_CC$ID)), sep="\n")
+```
+
+
+
+# Exporting the GSEA results
+
+```{r}
+write.table(merged_df_chr_BP, file="GSEA_chr_BP.tsv", sep="\t", row.names=FALSE)
+write.table(merged_df_chr_MF, file="GSEA_chr_MF.tsv", sep="\t", row.names=FALSE)
+write.table(merged_df_chr_CC, file="GSEA_chr_CC.tsv", sep="\t", row.names=FALSE)
+write.table(merged_df_plas_BP, file="GSEA_plas_BP.tsv", sep="\t", row.names=FALSE)
+write.table(merged_df_plas_MF, file="GSEA_plas_MF.tsv", sep="\t", row.names=FALSE)
+write.table(merged_df_plas_CC, file="GSEA_plas_CC.tsv", sep="\t", row.names=FALSE)
+```
+
+
+
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```

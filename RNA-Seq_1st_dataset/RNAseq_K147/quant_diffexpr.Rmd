@@ -1,0 +1,249 @@
+---
+title: 'RNA-Seq: quantification and DE analysis'
+author: "Laura Toribio-Celestino"
+date: "May 2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading required packages
+
+```{r, results='hide', eval=TRUE, message=FALSE, warning=FALSE}
+library(Rsubread)
+library(DESeq2)
+library(apeglm)
+library(dplyr)
+library(ggplot2)
+library(pheatmap)
+library(RColorBrewer)
+library(EnhancedVolcano)
+```
+
+
+
+
+# Quantification with featureCounts
+
+Let's start by reading the sorted BAM files and the annotation SAF file located in this directory.
+
+```{r, eval=TRUE}
+bamfiles <- dir(".", ".bam$")
+saffile <- dir(".", "saf$")
+```
+
+Next, gene-level quantification is performed using featureCounts, which is faster than other methods and requires less computer memory. Strandness was checked before running.
+
+```{r, eval=TRUE}
+fc <- featureCounts(bamfiles, annot.ext=saffile, strandSpecific=2, isPairedEnd=TRUE, nthreads=15)
+```
+
+Count data is exported to a TSV file. Here we'll see some stats of the count data.
+
+```{r, eval=TRUE}
+write.table(x=data.frame(fc$annotation[,c("GeneID","Chr", "Length")], fc$counts, stringsAsFactors=FALSE), file="featureCounts.tsv", quote=FALSE, sep="\t", row.names=FALSE)
+head(fc$counts)
+summary(fc$counts)
+fc$stat
+```
+
+The count matrices are prepared for the construction of the DESeqDataSet object. Gene IDs are set as row names.
+
+```{r, eval=TRUE}
+countdata <- fc$counts
+colnames(countdata) <- gsub("\\.bam$", "", colnames(countdata))
+nrow(countdata)
+```
+
+Plotting the total read counts of each sample.
+
+```{r, eval=TRUE, fig.dim=c(4,4)}
+par(mar=c(8,4,4,1)+0.1)
+barplot(colSums(countdata), las=3, main="Counts")
+```
+
+
+
+
+
+
+# DESeqDataSet object and experimental design
+
+Building the variables for the columns of the colData object. The condition of all samples and replicates is specified.
+
+```{r, eval=TRUE}
+condition <- c('wt', 'wt', 'wt', 'wt', 'cur', 'cur')
+replicate <- c('1', '2', '3', '4', '1', '2')
+coldata <- as.data.frame(cbind(colnames(countdata), condition, replicate))
+coldata
+```
+
+Constructing the DESeqDataSet object.
+
+```{r, eval=TRUE}
+dds <- DESeqDataSetFromMatrix(countData = countdata, colData = coldata, design = ~ condition)
+head(dds)
+nrow(dds)
+```
+
+The reference level of the condition's factors must be specified. The reference will be defined as the pOXA-48-free version of the strain.
+
+```{r, eval=TRUE}
+dds$condition <- relevel(dds$condition, ref = "cur")
+```
+
+
+## Pre-filtering the dataset
+
+Rows with 0 counts will be removed to increase the speed of the DESeq2 pipeline. Additional weighting/filtering to improve power is applied at a later step in the DESeq2 workflow.
+
+```{r, eval=TRUE, class.source="bg-success"}
+keep <- rowSums(counts(dds)) > 1
+dds <- dds[keep,]
+nrow(dds)
+```
+
+
+
+
+
+
+# Analysis of count data
+
+Before exploratory analyses, count data is transformed to stabilize the variance across the mean. The rlog transformation is applied since it works best on small datasets (n<30), in comparison with the VST method.
+
+```{r, eval=TRUE}
+rld <- rlog(dds, blind = FALSE)
+head(assay(rld))
+```
+
+
+
+
+
+### Heatmap of distances between samples
+
+To observe the similarities and dissimilarities between samples, we plot a heatmap of Euclidean distances. Replicates from each condition should cluster together.
+
+```{r, eval=TRUE, fig.dim=c(5,4)}
+sampleDists <- dist(t(assay(rld)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(rld$condition, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors,
+         main="Heatmap of Euclidean distances")
+```
+
+
+### PCA plot
+
+In PCA plots, samples are projected onto the 2D plane such that they spread out in the two directions that explain most of the differences betweem them. The x-axis (PC1) is the direction that separates the data points the most. The y-axis (PC2) is the direction that separates the data the second most. The percent of the total variance that is contained in the direction is printed in the axis label. Replicates from each condition should cluster together.
+
+```{r, eval=TRUE, fig.dim=c(5,4)}
+pcaData <- plotPCA(rld, intgroup = c("condition", "replicate"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+ggplot(pcaData, aes(x = PC1, y = PC2, color = condition, shape = replicate)) +
+  geom_point(size =3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  coord_fixed() +
+  theme_bw()
+```
+
+
+
+
+
+
+## Differential expression analysis
+
+As we have already specified an experimental design when we created the DESeqDataSet, we can run the differential expression pipeline on the raw counts:
+
+```{r, eval=TRUE}
+dds <- DESeq(dds)
+resultsNames(dds)
+```
+
+We'll have a look at the summary of the unfiltered DE results. The LFC is shrunken with the apeglm method for visualizing results and ranking the genes for GSEA analysis.
+
+```{r, eval=TRUE, class.source="bg-success"}
+res <- results(dds)
+res <- lfcShrink(dds, coef="condition_wt_vs_cur", type="apeglm")
+res
+summary(res)
+```
+
+The unfiltered DE results are exported to a TSV file (contains NAs and non-significant DEGs).
+
+```{r, eval=TRUE}
+## The saf file, which contains the RefSeq IDs is read
+saftable <- read.csv(saffile, header=TRUE, sep="\t")
+saftable <- as.data.frame(saftable)
+## Merge with normalized count data and annotation
+resdata <- merge(as.data.frame(res), as.data.frame(counts(dds, normalized=TRUE)), by="row.names", sort=FALSE)
+names(resdata)[1] <- "GeneID"
+resdata <- merge(x=as.data.frame(resdata), saftable, by="GeneID")
+head(resdata)
+## Write results
+write.table(resdata, file="DE_results_raw.tsv", sep="\t", row.names=FALSE)
+```
+
+Lowering the FDR threshold on padj (Benjamini-Hochberg adjusted p-values).
+
+```{r, eval=TRUE, class.source="bg-success"}
+resfilt <- results(dds, alpha = 0.05)
+table(resfilt$padj < 0.05)
+resfilt
+summary(resfilt)
+```
+
+Exporting the filtered DE results to a CSV file.
+
+```{r, eval=TRUE}
+## Creating a results data frame filtered by padj and LFC
+resFilt <- subset(resfilt, padj < 0.05)
+## Merge with normalized count data and annotation
+resdatafilt <- merge(as.data.frame(resFilt), as.data.frame(counts(dds, normalized=TRUE)), by="row.names", sort=FALSE)
+names(resdatafilt)[1] <- "GeneID"
+resdatafilt <- merge(x=as.data.frame(resdatafilt), saftable, by="GeneID")
+head(resdatafilt)
+## Order by log2FC
+resdatafilt <- resdatafilt[order(resdatafilt$log2FoldChange, decreasing = TRUE), ]
+## Write results
+write.table(resdatafilt, file="DE_results_filtered_padj.tsv", sep="\t", row.names=FALSE)
+```
+
+
+
+
+### MA plot
+
+MA plots show the log2 fold changes in gene expression over the mean of normalized counts for all the samples. Blue points indicate the adjusted P value is less than 0.05. Points which fall out of the window are plotted as open triangles pointing either up or down.
+
+```{r, eval=TRUE, fig.dim=c(5,4)}
+DESeq2::plotMA(res, ylim=c(-5,5), main="MA plot")
+```
+
+
+### Volcano plot
+
+The volcano plot arranges genes along two dimensions: the x-axis is the log fold change between the two groups, and the y-axis represents the adjusted P values between samples (on a negative log scale so smaller p-values appear higher up). 
+
+```{r, eval=TRUE, fig.dim=c(8,9.5), warning=FALSE}
+EnhancedVolcano(res, lab = rownames(res), x = 'log2FoldChange', y = 'padj', pCutoff=0.05, FCcutoff=0, subtitleLabSize=0, axisLabSize=10, labSize=3, legendLabSize=10, legendIconSize=3, col=c('black', 'black', 'gold2', 'blue'), colAlpha = 0.3, drawConnectors = TRUE)
+```
+
+
+
+
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```

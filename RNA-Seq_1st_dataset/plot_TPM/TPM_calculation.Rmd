@@ -1,0 +1,519 @@
+---
+title: "TPM calculation"
+author: "Laura Toribio-Celestino"
+date: "10/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading required packages
+
+```{r, results='hide', eval=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(CustomSelection)
+library(reshape2)
+```
+
+
+## Importing the TPM tables and assessing normalization approaches
+
+Following files include TPM values of chromosomal and pOXA-48 genes (other plasmid's genes were filtered out after TPM calculation in each strain's R project), for each replicate, and the median TPM values between replicates.
+
+```{r, eval=TRUE}
+files <- list.files(pattern = "*_chr_pOXA48.tsv")
+for (i in 1:length(files)) assign(files[i], read.table(files[i], header = TRUE))
+```
+
+Calculating the median TPM values of chromosomal expression across replicates and strains and coefficient of variance:
+
+```{r, eval=TRUE}
+medianschr <- c()
+medianschr <- c(medianschr, median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 5]))
+medianschr <- c(medianschr, median(TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+medianschr <- c(medianschr, median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 4]))
+medianschr <- c(medianschr, median(TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$Chr == "Chromosome", 2]))
+medianschr <- c(medianschr, median(TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$Chr == "Chromosome", 3]))
+# Coefficient of variance
+sd(medianschr)/mean(medianschr)
+```
+
+Calculating the coefficient of variance of the rpoD, dnaE and recA housekeeping genes across samples:
+
+```{r, eval=TRUE}
+rpoD_tpm <- c()
+rpoD_tpm <- c(rpoD_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000668", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000668", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000668", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004157", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004157", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004157", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004138", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004138", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004138", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000651", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000651", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000651", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000656", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000656", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000656", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000664", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000664", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000664", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000664", 5])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000647", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 3])
+rpoD_tpm <- c(rpoD_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000667", 4])
+rpoD_tpm <- c(rpoD_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000649", 2])
+rpoD_tpm <- c(rpoD_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000649", 3])
+dnaE_tpm <- c()
+dnaE_tpm <- c(dnaE_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003922", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003922", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003922", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_002432", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_002432", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_002432", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000903", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000903", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_000903", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004217", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004217", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004217", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004379", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004379", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004379", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004145", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004145", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004145", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004148", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004148", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004148", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004114", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004114", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004114", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004114", 5])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004145", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004145", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004233", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004233", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004233", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004337", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004337", 3])
+dnaE_tpm <- c(dnaE_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004337", 4])
+dnaE_tpm <- c(dnaE_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003588", 2])
+dnaE_tpm <- c(dnaE_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003588", 3])
+recA_tpm <- c()
+recA_tpm <- c(recA_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001179", 2])
+recA_tpm <- c(recA_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001179", 3])
+recA_tpm <- c(recA_tpm, TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001179", 4])
+recA_tpm <- c(recA_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004545", 2])
+recA_tpm <- c(recA_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004545", 3])
+recA_tpm <- c(recA_tpm, TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_004545", 4])
+recA_tpm <- c(recA_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003721", 2])
+recA_tpm <- c(recA_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003721", 3])
+recA_tpm <- c(recA_tpm, TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_003721", 4])
+recA_tpm <- c(recA_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001099", 2])
+recA_tpm <- c(recA_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001099", 3])
+recA_tpm <- c(recA_tpm, TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001099", 4])
+recA_tpm <- c(recA_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 2])
+recA_tpm <- c(recA_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 3])
+recA_tpm <- c(recA_tpm, TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 4])
+recA_tpm <- c(recA_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001091", 2])
+recA_tpm <- c(recA_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001091", 3])
+recA_tpm <- c(recA_tpm, TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001091", 4])
+recA_tpm <- c(recA_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 2])
+recA_tpm <- c(recA_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 3])
+recA_tpm <- c(recA_tpm, TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001093", 4])
+recA_tpm <- c(recA_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001150", 2])
+recA_tpm <- c(recA_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001150", 3])
+recA_tpm <- c(recA_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001150", 4])
+recA_tpm <- c(recA_tpm, TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001150", 5])
+recA_tpm <- c(recA_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001092", 2])
+recA_tpm <- c(recA_tpm, TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001092", 3])
+recA_tpm <- c(recA_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 2])
+recA_tpm <- c(recA_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 3])
+recA_tpm <- c(recA_tpm, TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 4])
+recA_tpm <- c(recA_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 2])
+recA_tpm <- c(recA_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 3])
+recA_tpm <- c(recA_tpm, TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001169", 4])
+recA_tpm <- c(recA_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001012", 2])
+recA_tpm <- c(recA_tpm, TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$GeneID == "cds-pgaptmp_001012", 3])
+# Coefficient of variance
+sd(rpoD_tpm)/mean(rpoD_tpm)
+sd(dnaE_tpm)/mean(dnaE_tpm)
+sd(recA_tpm)/mean(recA_tpm)
+```
+
+Since the coefficient of variance is lower when using the median chromosomal TPM values, we used these values for normalizing the expression of pOXA-48 genes in later steps.
+
+Gene names for pOXA-48:
+
+```{r, eval=TRUE}
+genes83 <- c("trbC","trbB","trbA","trbN","orf05","Dtir_up","IS1up","IS1999up","blaOXA-48","lysR","IS1999ds","Dtir_ds","pemI","pemK","ltrA","umuD","umuC","orf18","orf19","orf20","orf21","relB","orf23","orf24","orf25","orf26","orf27","orf28","orf29","orf30","orf31","xerD","parA","parB","pld","orf36","orf37","orf38","orf39","orf40","radC","korC","orf43","IS1ds","orf45","ccgA1","orf47","orf48","ymoA","orf50","orf51","orf52","klcA","orf54","orf55","ssb","orf57","orf58","mobC","nikA","mobA","traH","traI","traJ","traK","traC","traL","orf68","H-NS-like","traM","traN","traO","traP","traQ","traR","orf76","traU","traW","traX","traY","excA","repC","repA")
+
+genes82.1 <- c("trbC","trbB","trbA","trbN","orf05","Dtir_up","IS1up","blaOXA-48","lysR","IS1999ds","Dtir_ds","pemI","pemK","ltrA","umuD","umuC","orf18","orf19","orf20","orf21","relB","orf23","orf24","orf25","orf26","orf27","orf28","orf29","orf30","orf31","xerD","parA","parB","pld","orf36","orf37","orf38","orf39","orf40","radC","korC","orf43","IS1ds","orf45","ccgA1","orf47","orf48","ymoA","orf50","orf51","orf52","klcA","orf54","orf55","ssb","orf57","orf58","mobC","nikA","mobA","traH","traI","traJ","traK","traC","traL","orf68","H-NS-like","traM","traN","traO","traP","traQ","traR","orf76","traU","traW","traX","traY","excA","repC","repA")
+
+genes82.2 <- c("trbC","trbB","trbA","trbN","orf05","Dtir_up","IS1up","IS1999up","blaOXA-48","lysR","IS1999ds","Dtir_ds","pemI","pemK","umuD","umuC","orf18","orf19","orf20","orf21","relB","orf23","orf24","orf25","orf26","orf27","orf28","orf29","orf30","orf31","xerD","parA","parB","pld","orf36","orf37","orf38","orf39","orf40","radC","korC","orf43","IS1ds","orf45","ccgA1","orf47","orf48","ymoA","orf50","orf51","orf52","klcA","orf54","orf55","ssb","orf57","orf58","mobC","nikA","mobA","traH","traI","traJ","traK","traC","traL","orf68","H-NS-like","traM","traN","traO","traP","traQ","traR","orf76","traU","traW","traX","traY","excA","repC","repA")
+
+genes81 <- c("trbC","trbB","trbA","trbN","orf05","Dtir_up","IS1up","IS1999up","blaOXA-48","lysR","IS1999ds","Dtir_ds","pemI","pemK","umuD","umuC","orf18","orf19","orf20","orf21","relB","orf23","orf24","orf25","orf26","orf27","orf28","orf29","orf30","orf31","xerD","parA","parB","pld","orf36","orf37","orf38","orf39","orf40","radC","korC","orf43","IS1ds","orf45","ccgA1","orf47","orf48","ymoA","orf51","orf52","klcA","orf54","orf55","ssb","orf57","orf58","mobC","nikA","mobA","traH","traI","traJ","traK","traC","traL","orf68","H-NS-like","traM","traN","traO","traP","traQ","traR","orf76","traU","traW","traX","traY","excA","repC","repA")
+```
+
+Functional annotation:
+
+```{r, eval=TRUE}
+func83 <-c(rep("Conjugation", 4), "Hypothetical proteins", "Conjugation", rep("Insertion sequences", 2), "Antibiotic resistance (blaOXA-48)", "Other functions", "Insertion sequences", "Conjugation", rep("Replication/maintenance", 2), rep("Other functions", 3), rep("Hypothetical proteins", 4), "Other functions", rep("Hypothetical proteins", 5), rep("Other functions", 2), rep("Hypothetical proteins", 2), rep("Replication/maintenance", 3), "Other functions", rep("Hypothetical proteins", 5), "Other functions", "Other functions", "Hypothetical proteins", "Insertion sequences", "Hypothetical proteins", "Other functions", rep("Hypothetical proteins", 2), "Other functions", rep("Hypothetical proteins", 3), "Other functions", rep("Hypothetical proteins", 2), "Replication/maintenance", rep("Hypothetical proteins", 2), rep("Conjugation", 9), "Hypothetical proteins", "Other functions", rep("Conjugation", 6), "Hypothetical proteins", rep("Conjugation", 4), "Other functions", rep("Replication/maintenance", 2))
+
+func82.1 <-c(rep("Conjugation", 4), "Hypothetical proteins", "Conjugation", "Insertion sequences", "Antibiotic resistance (blaOXA-48)", "Other functions", "Insertion sequences", "Conjugation", rep("Replication/maintenance", 2), rep("Other functions", 3), rep("Hypothetical proteins", 4), "Other functions", rep("Hypothetical proteins", 5), rep("Other functions", 2), rep("Hypothetical proteins", 2), rep("Replication/maintenance", 3), "Other functions", rep("Hypothetical proteins", 5), "Other functions", "Other functions", "Hypothetical proteins", "Insertion sequences", "Hypothetical proteins", "Other functions", rep("Hypothetical proteins", 2), "Other functions", rep("Hypothetical proteins", 3), "Other functions", rep("Hypothetical proteins", 2), "Replication/maintenance", rep("Hypothetical proteins", 2), rep("Conjugation", 9), "Hypothetical proteins", "Other functions", rep("Conjugation", 6), "Hypothetical proteins", rep("Conjugation", 4), "Other functions", rep("Replication/maintenance", 2))
+
+func82.2 <-c(rep("Conjugation", 4), "Hypothetical proteins", "Conjugation", rep("Insertion sequences", 2), "Antibiotic resistance (blaOXA-48)", "Other functions", "Insertion sequences", "Conjugation", rep("Replication/maintenance", 2), rep("Other functions", 2), rep("Hypothetical proteins", 4), "Other functions", rep("Hypothetical proteins", 5), rep("Other functions", 2), rep("Hypothetical proteins", 2), rep("Replication/maintenance", 3), "Other functions", rep("Hypothetical proteins", 5), "Other functions", "Other functions", "Hypothetical proteins", "Insertion sequences", "Hypothetical proteins", "Other functions", rep("Hypothetical proteins", 2), "Other functions", rep("Hypothetical proteins", 3), "Other functions", rep("Hypothetical proteins", 2), "Replication/maintenance", rep("Hypothetical proteins", 2), rep("Conjugation", 9), "Hypothetical proteins", "Other functions", rep("Conjugation", 6), "Hypothetical proteins", rep("Conjugation", 4), "Other functions", rep("Replication/maintenance", 2))
+
+func81 <-c(rep("Conjugation", 4), "Hypothetical proteins", "Conjugation", rep("Insertion sequences", 2), "Antibiotic resistance (blaOXA-48)", "Other functions", "Insertion sequences", "Conjugation", rep("Replication/maintenance", 2), rep("Other functions", 2), rep("Hypothetical proteins", 4), "Other functions", rep("Hypothetical proteins", 5), rep("Other functions", 2), rep("Hypothetical proteins", 2), rep("Replication/maintenance", 3), "Other functions", rep("Hypothetical proteins", 5), "Other functions", "Other functions", "Hypothetical proteins", "Insertion sequences", "Hypothetical proteins", "Other functions", rep("Hypothetical proteins", 2), "Other functions", rep("Hypothetical proteins", 2), "Other functions", rep("Hypothetical proteins", 2), "Replication/maintenance", rep("Hypothetical proteins", 2), rep("Conjugation", 9), "Hypothetical proteins", "Other functions", rep("Conjugation", 6), "Hypothetical proteins", rep("Conjugation", 4), "Other functions", rep("Replication/maintenance", 2))
+```
+
+
+
+
+## Working with all replicates
+
+Normalizing pOXA-48 genes' TPM values by chromosomal median TPM values, by strain and replica:
+
+```{r, eval=TRUE}
+# Selecting only pOXA-48 columns
+plasTPM_EC10_selec <- TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_C325_selec <- TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_CF13_selec <- TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_H53_selec <- TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_J57_selec <- TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_KPN04_selec <- TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_KPN07_selec <- TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_K147_selec <- TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_KPN10_selec <- TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_KPN15_selec <- TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_KPN18_selec <- TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+plasTPM_MG1655p_selec <- TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$Chr == "pOXA-48", ]
+# Normalizing TPM of each replicateby median chromosomal TPM
+plasTPM_EC10_selec$TC_EC10.1_norm <- plasTPM_EC10_selec$TC_EC10.1 / median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_EC10_selec$TC_EC10.2_norm <- plasTPM_EC10_selec$TC_EC10.2 / median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_EC10_selec$TC_EC10.3_norm <- plasTPM_EC10_selec$TC_EC10.3 / median(TPM_EC10_chr_pOXA48.tsv[TPM_EC10_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_C325_selec$C325.1_norm <- plasTPM_C325_selec$C325.1 / median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_C325_selec$C325.2_norm <- plasTPM_C325_selec$C325.2 / median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_C325_selec$C325.3_norm <- plasTPM_C325_selec$C325.3 / median(TPM_C325_chr_pOXA48.tsv[TPM_C325_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_CF13_selec$CF13.1_norm <- plasTPM_CF13_selec$CF13.1 / median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_CF13_selec$CF13.2_norm <- plasTPM_CF13_selec$CF13.2 / median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_CF13_selec$CF13.3_norm <- plasTPM_CF13_selec$CF13.3 / median(TPM_CF13_chr_pOXA48.tsv[TPM_CF13_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_H53_selec$H53.1_norm <- plasTPM_H53_selec$H53.1 / median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_H53_selec$H53.2_norm <- plasTPM_H53_selec$H53.2 / median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_H53_selec$H53.3_norm <- plasTPM_H53_selec$H53.3 / median(TPM_H53_chr_pOXA48.tsv[TPM_H53_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_J57_selec$J57.1_norm <- plasTPM_J57_selec$J57.1 / median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_J57_selec$J57.2_norm <- plasTPM_J57_selec$J57.2 / median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_J57_selec$J57.3_norm <- plasTPM_J57_selec$J57.3 / median(TPM_J57_chr_pOXA48.tsv[TPM_J57_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_KPN04_selec$TC_KPN04.1_norm <- plasTPM_KPN04_selec$TC_KPN04.1 / median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_KPN04_selec$TC_KPN04.2_norm <- plasTPM_KPN04_selec$TC_KPN04.2 / median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_KPN04_selec$TC_KPN04.3_norm <- plasTPM_KPN04_selec$TC_KPN04.3 / median(TPM_KPN04_chr_pOXA48.tsv[TPM_KPN04_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_KPN07_selec$TC_KPN07.1_norm <- plasTPM_KPN07_selec$TC_KPN07.1 / median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_KPN07_selec$TC_KPN07.2_norm <- plasTPM_KPN07_selec$TC_KPN07.2 / median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_KPN07_selec$TC_KPN07.3_norm <- plasTPM_KPN07_selec$TC_KPN07.3 / median(TPM_KPN07_chr_pOXA48.tsv[TPM_KPN07_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_K147_selec$K147.1_norm <- plasTPM_K147_selec$K147.1 / median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_K147_selec$K147.2_norm <- plasTPM_K147_selec$K147.2 / median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_K147_selec$K147.3_norm <- plasTPM_K147_selec$K147.3 / median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_K147_selec$K147.4_norm <- plasTPM_K147_selec$K147.4 / median(TPM_K147_chr_pOXA48.tsv[TPM_K147_chr_pOXA48.tsv$Chr == "Chromosome", 5])
+plasTPM_KPN10_selec$TC_KPN10.1_norm <- plasTPM_KPN10_selec$TC_KPN10.1 / median(TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_KPN10_selec$TC_KPN10.2_norm <- plasTPM_KPN10_selec$TC_KPN10.2 / median(TPM_KPN10_chr_pOXA48.tsv[TPM_KPN10_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_KPN15_selec$TC_KPN15.1_norm <- plasTPM_KPN15_selec$TC_KPN15.1 / median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_KPN15_selec$TC_KPN15.2_norm <- plasTPM_KPN15_selec$TC_KPN15.2 / median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_KPN15_selec$TC_KPN15.3_norm <- plasTPM_KPN15_selec$TC_KPN15.3 / median(TPM_KPN15_chr_pOXA48.tsv[TPM_KPN15_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_KPN18_selec$TC_KPN18.1_norm <- plasTPM_KPN18_selec$TC_KPN18.1 / median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_KPN18_selec$TC_KPN18.2_norm <- plasTPM_KPN18_selec$TC_KPN18.2 / median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+plasTPM_KPN18_selec$TC_KPN18.3_norm <- plasTPM_KPN18_selec$TC_KPN18.3 / median(TPM_KPN18_chr_pOXA48.tsv[TPM_KPN18_chr_pOXA48.tsv$Chr == "Chromosome", 4])
+plasTPM_MG1655p_selec$MG1655p.1_norm <- plasTPM_MG1655p_selec$MG1655p.1 / median(TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$Chr == "Chromosome", 2])
+plasTPM_MG1655p_selec$MG1655p.2_norm <- plasTPM_MG1655p_selec$MG1655p.2 / median(TPM_MG1655_chr_pOXA48.tsv[TPM_MG1655_chr_pOXA48.tsv$Chr == "Chromosome", 3])
+```
+
+Reformatting dataframes:
+
+```{r, eval=TRUE}
+# Subsetting only GeneID and samples (normalized) columns
+plasTPM_EC10_selec <- plasTPM_EC10_selec[c("GeneID", "TC_EC10.1_norm", "TC_EC10.2_norm", "TC_EC10.3_norm")]
+plasTPM_C325_selec <- plasTPM_C325_selec[c("GeneID", "C325.1_norm", "C325.2_norm", "C325.3_norm")]
+plasTPM_CF13_selec <- plasTPM_CF13_selec[c("GeneID", "CF13.1_norm", "CF13.2_norm", "CF13.3_norm")]
+plasTPM_H53_selec <- plasTPM_H53_selec[c("GeneID", "H53.1_norm", "H53.2_norm", "H53.3_norm")]
+plasTPM_J57_selec <- plasTPM_J57_selec[c("GeneID", "J57.1_norm", "J57.2_norm", "J57.3_norm")]
+plasTPM_KPN04_selec <- plasTPM_KPN04_selec[c("GeneID", "TC_KPN04.1_norm", "TC_KPN04.2_norm", "TC_KPN04.3_norm")]
+plasTPM_KPN07_selec <- plasTPM_KPN07_selec[c("GeneID", "TC_KPN07.1_norm", "TC_KPN07.2_norm", "TC_KPN07.3_norm")]
+plasTPM_K147_selec <- plasTPM_K147_selec[c("GeneID", "K147.1_norm", "K147.2_norm", "K147.3_norm", "K147.4_norm")]
+plasTPM_KPN10_selec <- plasTPM_KPN10_selec[c("GeneID", "TC_KPN10.1_norm", "TC_KPN10.2_norm")]
+plasTPM_KPN15_selec <- plasTPM_KPN15_selec[c("GeneID", "TC_KPN15.1_norm", "TC_KPN15.2_norm", "TC_KPN15.3_norm")]
+plasTPM_KPN18_selec <- plasTPM_KPN18_selec[c("GeneID", "TC_KPN18.1_norm", "TC_KPN18.2_norm", "TC_KPN18.3_norm")]
+plasTPM_MG1655p_selec <- plasTPM_MG1655p_selec[c("GeneID", "MG1655p.1_norm", "MG1655p.2_norm")]
+# Renaming GeneIDs to match between samples
+plasTPM_EC10_selec$GeneID <- genes82.1
+plasTPM_C325_selec$GeneID <- genes83
+plasTPM_CF13_selec$GeneID <- genes82.2
+plasTPM_H53_selec$GeneID <- genes82.2
+plasTPM_J57_selec$GeneID <- genes81
+plasTPM_KPN04_selec$GeneID <- genes83
+plasTPM_KPN07_selec$GeneID <- genes83
+plasTPM_K147_selec$GeneID <- genes83
+plasTPM_KPN10_selec$GeneID <- genes83
+plasTPM_KPN15_selec$GeneID <- genes83
+plasTPM_KPN18_selec$GeneID <- genes83
+plasTPM_MG1655p_selec$GeneID <- genes83
+```
+
+
+```{r, eval=TRUE}
+# Melting df to get samples in one column
+plasTPM_EC10_selec_m <- melt(plasTPM_EC10_selec, id.vars = "GeneID", measure.vars = c("TC_EC10.1_norm", "TC_EC10.2_norm", "TC_EC10.3_norm"))
+plasTPM_C325_selec_m <- melt(plasTPM_C325_selec, id.vars = "GeneID", measure.vars = c("C325.1_norm", "C325.2_norm", "C325.3_norm"))
+plasTPM_CF13_selec_m <- melt(plasTPM_CF13_selec, id.vars = "GeneID", measure.vars = c("CF13.1_norm", "CF13.2_norm", "CF13.3_norm"))
+plasTPM_H53_selec_m <- melt(plasTPM_H53_selec, id.vars = "GeneID", measure.vars = c("H53.1_norm", "H53.2_norm", "H53.3_norm"))
+plasTPM_J57_selec_m <- melt(plasTPM_J57_selec, id.vars = "GeneID", measure.vars = c("J57.1_norm", "J57.2_norm", "J57.3_norm"))
+plasTPM_KPN04_selec_m <- melt(plasTPM_KPN04_selec, id.vars = "GeneID", measure.vars = c("TC_KPN04.1_norm", "TC_KPN04.2_norm", "TC_KPN04.3_norm"))
+plasTPM_KPN07_selec_m <- melt(plasTPM_KPN07_selec, id.vars = "GeneID", measure.vars = c("TC_KPN07.1_norm", "TC_KPN07.2_norm", "TC_KPN07.3_norm"))
+plasTPM_K147_selec_m <- melt(plasTPM_K147_selec, id.vars = "GeneID", measure.vars = c("K147.1_norm", "K147.2_norm", "K147.3_norm", "K147.4_norm"))
+plasTPM_KPN10_selec_m <- melt(plasTPM_KPN10_selec, id.vars = "GeneID", measure.vars = c("TC_KPN10.1_norm", "TC_KPN10.2_norm"))
+plasTPM_KPN15_selec_m <- melt(plasTPM_KPN15_selec, id.vars = "GeneID", measure.vars = c("TC_KPN15.1_norm", "TC_KPN15.2_norm", "TC_KPN15.3_norm"))
+plasTPM_KPN18_selec_m <- melt(plasTPM_KPN18_selec, id.vars = "GeneID", measure.vars = c("TC_KPN18.1_norm", "TC_KPN18.2_norm", "TC_KPN18.3_norm"))
+plasTPM_MG1655p_selec_m <- melt(plasTPM_MG1655p_selec, id.vars = "GeneID", measure.vars = c("MG1655p.1_norm", "MG1655p.2_norm"))
+# Removing .*_norm from strain name for later plotting
+plasTPM_EC10_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_EC10_selec_m$variable)
+plasTPM_C325_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_C325_selec_m$variable)
+plasTPM_CF13_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_CF13_selec_m$variable)
+plasTPM_H53_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_H53_selec_m$variable)
+plasTPM_J57_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_J57_selec_m$variable)
+plasTPM_KPN04_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_KPN04_selec_m$variable)
+plasTPM_KPN07_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_KPN07_selec_m$variable)
+plasTPM_K147_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_K147_selec_m$variable)
+plasTPM_KPN10_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_KPN10_selec_m$variable)
+plasTPM_KPN15_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_KPN15_selec_m$variable)
+plasTPM_KPN18_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_KPN18_selec_m$variable)
+plasTPM_MG1655p_selec_m$variable <- gsub("\\.\\d_norm", "", plasTPM_MG1655p_selec_m$variable)
+# Merging df
+joindfs <- rbind.data.frame(plasTPM_EC10_selec_m, plasTPM_C325_selec_m, plasTPM_CF13_selec_m, plasTPM_H53_selec_m, plasTPM_J57_selec_m, plasTPM_KPN04_selec_m, plasTPM_KPN07_selec_m, plasTPM_K147_selec_m, plasTPM_KPN10_selec_m, plasTPM_KPN15_selec_m, plasTPM_KPN18_selec_m, plasTPM_MG1655p_selec_m)
+joindfs$value <- as.numeric(joindfs$value)
+```
+
+
+#### Bar plots of pOXA-48 genes' log10TPM values normalized by chromosome
+
+```{r, eval=TRUE, fig.width=100,fig.height=10}
+sporder <- c("C325", "TC_EC10","MG1655p","CF13","J57","H53","K147","TC_KPN15","TC_KPN18","TC_KPN04","TC_KPN07","TC_KPN10")
+joindfs$GeneID <- factor(joindfs$GeneID, level = unique(joindfs$GeneID))
+
+plasTPMbar <- ggplot(joindfs, aes(x= GeneID, y= value, fill = factor(variable, level = sporder)))
+plasTPMbar + geom_bar(stat = "summary", fun = "mean", position = "dodge") +
+  #stat_summary(fun = mean, geom = "bar", position = "dodge", xlab = NULL, ylab = "log10TPM") + 
+  stat_summary(fun.data = mean_se, geom = "errorbar", position = "dodge") +
+  geom_point(aes(x = GeneID), shape = 21, position = position_dodge(width = 0.9)) +
+  scale_y_continuous(trans = "log10") + xlab(NULL) + ylab(expression(log[10]~TPM)) +
+  labs(x = NULL, y = "log10TPM") + theme_bw()
+
+#ggsave("plot_TPM_pOXA-48_norm_by_chr.png", width = 140, height = 20, units = "cm", limitsize = FALSE)
+```
+
+
+
+
+## Working with pOXA-48 median TPM values for simple representations with violin plots
+
+Some data preparation:
+
+```{r, eval=TRUE}
+# Add strain column (modifies original dfs)
+TPM_EC10_chr_pOXA48.tsv$Strain <- "EC10"
+TPM_C325_chr_pOXA48.tsv$Strain <- "C325"
+TPM_CF13_chr_pOXA48.tsv$Strain <- "CF13"
+TPM_H53_chr_pOXA48.tsv$Strain <- "H53"
+TPM_J57_chr_pOXA48.tsv$Strain <- "J57"
+TPM_KPN04_chr_pOXA48.tsv$Strain <- "KPN04"
+TPM_KPN07_chr_pOXA48.tsv$Strain <- "KPN07"
+TPM_K147_chr_pOXA48.tsv$Strain <- "K147"
+TPM_KPN10_chr_pOXA48.tsv$Strain <- "KPN10"
+TPM_KPN15_chr_pOXA48.tsv$Strain <- "KPN15"
+TPM_KPN18_chr_pOXA48.tsv$Strain <- "KPN18"
+TPM_MG1655_chr_pOXA48.tsv$Strain <- "MG1655"
+# Subset strain, chr, gene id and median tpm columns
+TPM_EC10 <- TPM_EC10_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_C325 <- TPM_C325_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_CF13 <- TPM_CF13_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_H53 <- TPM_H53_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_J57 <- TPM_J57_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_KPN04 <- TPM_KPN04_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_KPN07 <- TPM_KPN07_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_K147 <- TPM_K147_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_KPN10 <- TPM_KPN10_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_KPN15 <- TPM_KPN15_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_KPN18 <- TPM_KPN18_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+TPM_MG1655p <- TPM_MG1655_chr_pOXA48.tsv[c("Strain", "Chr", "GeneID", "median_tpm")]
+```
+
+```{r, eval=TRUE}
+# Calculate the median TPM between replicates of already normalized TPMs
+plasTPM_EC10_selec$median_tpm_norm <- apply(plasTPM_EC10_selec[, 2:4], 1, median)
+plasTPM_C325_selec$median_tpm_norm <- apply(plasTPM_C325_selec[, 2:4], 1, median)
+plasTPM_CF13_selec$median_tpm_norm <- apply(plasTPM_CF13_selec[, 2:4], 1, median)
+plasTPM_H53_selec$median_tpm_norm <- apply(plasTPM_H53_selec[, 2:4], 1, median)
+plasTPM_J57_selec$median_tpm_norm <- apply(plasTPM_J57_selec[, 2:4], 1, median)
+plasTPM_KPN04_selec$median_tpm_norm <- apply(plasTPM_KPN04_selec[, 2:4], 1, median)
+plasTPM_KPN07_selec$median_tpm_norm <- apply(plasTPM_KPN07_selec[, 2:4], 1, median)
+plasTPM_K147_selec$median_tpm_norm <- apply(plasTPM_K147_selec[, 2:5], 1, median)
+plasTPM_KPN10_selec$median_tpm_norm <- apply(plasTPM_KPN10_selec[, 2:3], 1, median)
+plasTPM_KPN15_selec$median_tpm_norm <- apply(plasTPM_KPN15_selec[, 2:4], 1, median)
+plasTPM_KPN18_selec$median_tpm_norm <- apply(plasTPM_KPN18_selec[, 2:4], 1, median)
+plasTPM_MG1655p_selec$median_tpm_norm <- apply(plasTPM_MG1655p_selec[, 2:3], 1, median)
+# Add strain colums and subset strain, chr, gene id and median tpm columns
+plasTPM_EC10_selec$Strain <- "EC10"
+plasTPM_EC10 <- plasTPM_EC10_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_C325_selec$Strain <- "C325"
+plasTPM_C325 <- plasTPM_C325_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_CF13_selec$Strain <- "CF13"
+plasTPM_CF13 <- plasTPM_CF13_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_H53_selec$Strain <- "H53"
+plasTPM_H53 <- plasTPM_H53_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_J57_selec$Strain <- "J57"
+plasTPM_J57 <- plasTPM_J57_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_K147_selec$Strain <- "K147"
+plasTPM_K147 <- plasTPM_K147_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_KPN04_selec$Strain <- "KPN04"
+plasTPM_KPN04 <- plasTPM_KPN04_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_KPN07_selec$Strain <- "KPN07"
+plasTPM_KPN07 <- plasTPM_KPN07_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_KPN10_selec$Strain <- "KPN10"
+plasTPM_KPN10 <- plasTPM_KPN10_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_KPN15_selec$Strain <- "KPN15"
+plasTPM_KPN15 <- plasTPM_KPN15_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_KPN18_selec$Strain <- "KPN18"
+plasTPM_KPN18 <- plasTPM_KPN18_selec[c("Strain", "GeneID", "median_tpm_norm")]
+plasTPM_MG1655p_selec$Strain <- "MG1655"
+plasTPM_MG1655p <- plasTPM_MG1655p_selec[c("Strain", "GeneID", "median_tpm_norm")]
+```
+
+Adding functional annotation to pOXA-48 genes:
+
+```{r, eval=TRUE}
+plasTPM_EC10$Function <- func82.1
+plasTPM_C325$Function <- func83
+plasTPM_CF13$Function <- func82.2
+plasTPM_H53$Function <- func82.2
+plasTPM_J57$Function <- func81
+plasTPM_KPN04$Function <- func83
+plasTPM_KPN07$Function <- func83
+plasTPM_K147$Function <- func83
+plasTPM_KPN10$Function <- func83
+plasTPM_KPN15$Function <- func83
+plasTPM_KPN18$Function <- func83
+plasTPM_MG1655p$Function <- func83
+```
+
+Final dataframes for plotting:
+
+```{r, eval=TRUE}
+# for plotting median TPM values of chromosome and pOXA-48
+alldf <- rbind(TPM_C325, TPM_EC10, TPM_MG1655p, TPM_CF13, TPM_J57, TPM_H53, TPM_K147, TPM_KPN15, TPM_KPN18, TPM_KPN04, TPM_KPN07, TPM_KPN10)
+# for plotting pOXA-48 median values normalized by chromosome
+plasdf <- rbind(plasTPM_C325, plasTPM_EC10, plasTPM_MG1655p, plasTPM_CF13, plasTPM_J57, plasTPM_H53, plasTPM_K147, plasTPM_KPN15, plasTPM_KPN18, plasTPM_KPN04, plasTPM_KPN07, plasTPM_KPN10)
+plasdf$Function <- as.factor(plasdf$Function)
+```
+
+
+#### Violin plots of chromosome vs pOXA-48 log10TPM values
+
+```{r, eval=TRUE}
+sporder <- c("C325", "EC10","MG1655","CF13","H53","J57","K147","KPN15","KPN18","KPN04","KPN07","KPN10")
+alldf$Strain <- factor(alldf$Strain, levels=sporder)
+
+tcplot <- ggplot(alldf, aes(Strain, median_tpm)) + theme_bw() + geom_violin(aes(Strain, median_tpm, fill=Chr), position=position_dodge(.9)) +
+  xlab(NULL) + ylab("TPM") + scale_y_continuous(trans = "log10") +
+  stat_summary(aes(group=Chr), position=position_dodge(.9), fun = "median", geom = "point", color = "black") +
+  geom_text(aes(Strain, median_tpm, label=GeneID), data=alldf[alldf$GeneID %in% "blaOXA-48", ]) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+tcplot
+```
+
+
+
+#### Violin plots of normalized by chromosome pOXA-48 median log10TPM values
+
+```{r, eval=TRUE}
+sporder <- c("C325", "EC10","MG1655","CF13","H53","J57","K147","KPN15","KPN18","KPN04","KPN07","KPN10")
+plasdf$Strain <- factor(plasdf$Strain, levels=sporder)
+
+plasplot <- ggplot(plasdf, aes(Strain, median_tpm_norm)) +
+  theme(axis.text.x=element_text(size=11), panel.background = element_rect(fill = "gray96")) +
+  geom_boxplot(notch=TRUE, outlier.shape=NA) + geom_jitter(alpha=0.7, position=position_jitter(seed=5, width=0.25), aes(color=Function)) +
+  scale_color_manual(breaks=c("Antibiotic resistance (blaOXA-48)", "Conjugation", "Replication/maintenance", "Insertion sequences", "Other functions", "Hypothetical proteins"),
+                     values=c("red3", "darkolivegreen3", "lightcoral", "gold2", "steelblue2", "gray")) +
+  xlab(NULL) + ylab("log10TPM") + scale_y_continuous(trans = "log10") +
+  geom_hline(yintercept=1, linetype="dashed", color="gray30") + theme_bw()
+plasplot
+```
+
+
+
+#### Heatmap of pOXA-48 normalized TPM values
+
+```{r, eval=TRUE}
+sporder <- c("KPN10","KPN07","KPN04","KPN18","KPN15","K147","H53","J57","CF13","MG1655","EC10","C325")
+plasdf$Strain <- factor(plasdf$Strain, levels=sporder)
+plasdf$GeneID <- factor(plasdf$GeneID, level = unique(plasdf$GeneID))
+plasdf$median_tpm_norm_log <- log2(plasdf$median_tpm_norm)
+
+plasheatmap <- ggplot(plasdf, aes(GeneID, Strain, fill=median_tpm_norm_log)) + geom_tile() + coord_fixed() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "mediumpurple2",
+                      mid = "cadetblue3",
+                      high = "gold1")
+plasheatmap
+```
+
+
+
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```
