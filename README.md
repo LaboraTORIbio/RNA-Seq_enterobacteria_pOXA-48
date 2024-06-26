@@ -4,6 +4,7 @@
 
 **Code and extended Bioinformatic methods for the manuscripts:**
 
+</br>
 
 
 ---
@@ -64,7 +65,7 @@ Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Her
 
 **Generation of closed reference genomes** described in [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md).
 
-**RNA-Seq read quality control** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md).
+**RNA-Seq read quality control** described in [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md).
 
 ### 📂 Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
 Contains bioinformatics workflows and scripts for:
