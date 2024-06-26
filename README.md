@@ -2,38 +2,74 @@
 
 </br>
 
-Code and extended Bioinformatic methods for the manuscripts:
+**Code and extended Bioinformatic methods for the manuscripts:**
+
+
 
 ---
 
-Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Herencias, Pedro Herrador Gómez, Coloma Costas Romero, Rafael Cantón, Jerónimo Rodríguez-Beltrán, Alfonso Santos-Lopez, Alvaro San Millan (2024) **Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria.** *bioRxiv*
+Laura Toribio-Celestino, Alicia Calvo-Villamañán, Cristina Herencias, Aida Alonso-del Valle, Jorge Sastre-Dominguez, Susana Quesada, Javier DelaFuente, Didier Mazel, Eduardo Rocha, Ariadna Fernandez-Calvet, Alvaro San Millan (2024) **Plasmid-chromosome transcriptional crosstalk in multidrug resistant clinical enterobacteria.** *In process...*
 
 ---
 
-&
 
----
+### 📂 Directory [`Genome_assemblies`](./Genome_assemblies/)
+Includes a MarkDown file describing the bioinformatics workflow for generating closed reference genomes: [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md).
 
-*In process...*
 
----
+### 📂 Directory [`RNA-Seq_1st_dataset`](./RNA-Seq_1st_dataset/)
+Contains bioinformatics workflows and scripts for:
+
+**RNA-Seq read quality control.** Described in the MarkDown file [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md), with associated files in subdirectory `reads_RNAseq`.
+
+**RNA-Seq data analysis of the 1st dataset.** The general RNA-Seq analysis workflow is described in [`RNA-Seq_1st_dataset.md`](./RNA-Seq_1st_dataset/RNA-Seq_1st_dataset.md). Each `RNAseq_<strain>` subdirectory includes:
+* The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis
+* The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
+* The `TPM_calculation.Rmd` script to calcultate the TPM values for each strain
+
+**Gene set enrichment analysis (GSEA)**. Workflow is also described in [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md). Analysis rendered [here](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_1st_dataset/GSEA/GSEA.html).
+
+**Data visualization.** TPM plots, heatmaps of gene expression, plots of DEGs by BP, dimensionality reduction and hierarchical clustering.
+
+
+6. ### 📂 Directory [`RNA-Seq_DeltaLysR`](./RNA-Seq_DeltaLysR/)
+Contains bioinformatics workflows and scripts for:
+
+**RNA-Seq read quality control and data analysis.** The general RNA-Seq analysis workflow is described in [`RNA-Seq_2nd_dataset.md`](./RNA-Seq_DeltaLysR/RNA-Seq_2nd_dataset.md). Each `RNAseq_<strain>` subdirectory includes:
+* The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis
+* The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
+* Other relevant files for the analysis (see the general workflow)
+
+**Data visualization.** Plots of the differential expression of genes regulated by LysRs.
+
+
+### 📂 Directory [`LysR_and_the_mystery_operon`](./LysR_and_the_mystery_operon/)
+Contains bioinformatics workflows and scripts for the study of the *lysR-pfp-ifp* cluster and the *pfp-ifp* operon. The general workflow is described in [`LysR_and_the_mystery_operon.md`](./LysR_and_the_mystery_operon/LysR_and_the_mystery_operon.md).
+* Identification of the *lysR-pfp-ifp* cluster in a large database of Proteobacteria genomes
+* Construction of phylogenetic trees of the *lysR-pfp-ifp* cluster and Proteobacteria
+* Ancestral character reconstruction of the *lysR-pfp-ifp* cluster
+* Genomic neighborhood of the *lysR-pfp-ifp* cluster
+* GC content and CAI calculation
+* Analysis of the conservation of LysR<sub>pOXA-48</sub>
+
+
 
 </br>
 
-### 📂 Directory [`Genome_assemblies`](./Genome_assemblies/)
-Includes a MarkDown file describing the bioinformatics workflow for generating closed reference genomes: [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md). Common to both manuscripts.
+---
 
-### 📂 Directory [`RNA-Seq`](./RNA-Seq/)
-Contains bioinformatics workflows for:
+Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Herencias, Pedro Herrador Gómez, Coloma Costas Romero, Rafael Cantón, Jerónimo Rodríguez-Beltrán, Alfonso Santos-Lopez, Alvaro San Millan (2024) **Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria.** *bioRxiv*. doi: https://doi.org/10.1101/2024.03.01.582297.
 
-**RNA-Seq read quality control:** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq/read_quality_control.md), with associated files in subdirectory `reads_RNAseq`. Common to both manuscripts.
+---
 
-**Main RNA-Seq data analysis** (*for manuscript in process...*)
+**Generation of closed reference genomes** described in [`closing_reference_genomes.md`](./Genome_assemblies/closing_reference_genomes.md).
+
+**RNA-Seq read quality control** described in the MarkDown file [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md).
 
 ### 📂 Directory [`RNA-Seq_experimental_evolution`](./RNA-Seq_experimental_evolution/)
-Contains bioinformatics workflows specific to the manuscript *Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria*:
-1. The general RNA-Seq analysis workflow is described in [`RNA-Seq_experimental_evolution.md`](./RNA-Seq_experimental_evolution/RNA-Seq_experimental_evolution.md)
-2. Each `RNAseq_<strain>` subdirectory includes:
-   * The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis (also available in R format)
-   * The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
-   * Other relevant files for the analysis (see the general workflow)
+Contains bioinformatics workflows and scripts for:
+
+**RNA-Seq read quality control and data analysis.** The general RNA-Seq analysis workflow is described in [`RNA-Seq_experimental_evolution.md`](./RNA-Seq_experimental_evolution/RNA-Seq_experimental_evolution.md). Each `RNAseq_<strain>` subdirectory includes:
+* The `quant_diffexpr.Rmd` script to perform read quantification and differential expression analysis (also available in R format)
+* The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
+* Other relevant files for the analysis (see the general workflow)
