@@ -2,7 +2,7 @@
 
 ## Project setup
 
-Before starting, check how reference genomes were assembled and closed ([closing_reference_genomes.md](../Genome_assemblies/closing_reference_genomes.md)) and how RNA-Seq reads were processed ([read_quality_control.md](RNA-Seq_1st_dataset/read_quality_control.md)).
+Before starting, check how reference genomes were assembled and closed ([closing_reference_genomes.md](../Genome_assemblies/closing_reference_genomes.md)) and how RNA-Seq reads were processed ([read_quality_control.md](read_quality_control.md)).
 
 Create the project directory from which run all commands:
 
