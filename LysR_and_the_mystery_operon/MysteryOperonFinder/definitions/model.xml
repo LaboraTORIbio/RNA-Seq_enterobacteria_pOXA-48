@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model inter_gene_max_space="0" min_mandatory_genes_required="3" min_genes_required="3" vers="2.0">
+
+  <gene name="lysR_PF03466" presence="mandatory" />
+  
+  <gene name="pirin_PF02678" presence="mandatory" />
+
+  <gene name="isochorismatase_PF00857" presence="mandatory" />
+
+</model>

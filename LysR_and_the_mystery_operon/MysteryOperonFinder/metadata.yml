@@ -1,0 +1,8 @@
+cite: Place here how to cite this package, it can hold several citation
+copyright: Copyright (c) 2023 None
+doc: where to find documentation about this package
+maintainer:
+  email: lauratorcel@gmail.com
+  name: Laura Toribio-Celestino
+short_desc: Models for the identification of the pirin and isochorismatase operon putatively regulated by lysR
+vers: 0.1b1
