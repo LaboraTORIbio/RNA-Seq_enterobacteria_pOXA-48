@@ -28,12 +28,12 @@ Contains bioinformatics workflows and scripts for:
 * The HTML file `quant_diffexpr.html` to visualize the outputs of the Rmd script (see the general workflow for links to the rendered HTMLs)
 * The `TPM_calculation.Rmd` script to calcultate the TPM values for each strain
 
-**Gene set enrichment analysis (GSEA)**. Workflow is also described in [`read_quality_control.md`](./RNA-Seq_1st_dataset/read_quality_control.md). Analysis rendered [here](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_1st_dataset/GSEA/GSEA.html).
+**Gene set enrichment analysis (GSEA)**. Workflow is also described in [`RNA-Seq_1st_dataset.md`](./RNA-Seq_1st_dataset/RNA-Seq_1st_dataset.md). Analysis rendered [here](https://laboratoribio.github.io/RNA-Seq_enterobacteria_pOXA-48/RNA-Seq_1st_dataset/GSEA/GSEA.html).
 
 **Data visualization.** TPM plots, heatmaps of gene expression, plots of DEGs by BP, dimensionality reduction and hierarchical clustering.
 
 
-6. ### 📂 Directory [`RNA-Seq_DeltaLysR`](./RNA-Seq_DeltaLysR/)
+### 📂 Directory [`RNA-Seq_DeltaLysR`](./RNA-Seq_DeltaLysR/)
 Contains bioinformatics workflows and scripts for:
 
 **RNA-Seq read quality control and data analysis.** The general RNA-Seq analysis workflow is described in [`RNA-Seq_2nd_dataset.md`](./RNA-Seq_DeltaLysR/RNA-Seq_2nd_dataset.md). Each `RNAseq_<strain>` subdirectory includes:
