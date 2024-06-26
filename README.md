@@ -54,6 +54,9 @@ Contains bioinformatics workflows and scripts for the study of the *lysR-pfp-ifp
 * Analysis of the conservation of LysR<sub>pOXA-48</sub>
 
 
+### 📂 Directory [`EDA_Stats_Figs`](./EDA_Stats_Figs/)
+Includes workflows for exploratory data analyses, generating plots and performing statistical tests, including a generalized linear model (GAM).
+
 
 </br>
 
