@@ -46,6 +46,7 @@ Contains bioinformatics workflows and scripts for:
 
 ### 📂 Directory [`LysR_and_the_mystery_operon`](./LysR_and_the_mystery_operon/)
 Contains bioinformatics workflows and scripts for the study of the *lysR-pfp-ifp* cluster and the *pfp-ifp* operon. The general workflow is described in [`LysR_and_the_mystery_operon.md`](./LysR_and_the_mystery_operon/LysR_and_the_mystery_operon.md).
+* Construction of MysteryOperonFinder - a MacSyFinder model
 * Identification of the *lysR-pfp-ifp* cluster in a large database of Proteobacteria genomes
 * Construction of phylogenetic trees of the *lysR-pfp-ifp* cluster and Proteobacteria
 * Ancestral character reconstruction of the *lysR-pfp-ifp* cluster
@@ -55,7 +56,7 @@ Contains bioinformatics workflows and scripts for the study of the *lysR-pfp-ifp
 
 
 ### 📂 Directory [`EDA_Stats_Figs`](./EDA_Stats_Figs/)
-Includes workflows for exploratory data analyses, generating plots and performing statistical tests, including a generalized linear model (GAM).
+Includes workflows for exploratory data analyses, generating plots and performing statistical tests, including a generalized additive model (GAM).
 
 
 </br>
