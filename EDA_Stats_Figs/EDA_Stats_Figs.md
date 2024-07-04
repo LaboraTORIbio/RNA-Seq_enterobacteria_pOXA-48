@@ -28,7 +28,7 @@ awk -F'\t' 'BEGIN {OFS=FS} NR==FNR {a[$1]=$3; next} $19 in a {$22=a[$19]} 1' GSE
 awk -F'\t' 'BEGIN {OFS=FS} NR==FNR {a[$1]=$3; next} $18 in a {$21=a[$18]} 1' GSEA/refseq2uniprot/refseq2uniprot_MG1655_chr_filt.tsv <(cat RNAseq_MG1655/DE_results_filtered_chromosome_padj.tsv | sed 's/"//g' | sed 's/\.1\t/\t/g') | cut -f21,3 | awk -F'\t' '$2 != ""' > plot_DEGs_by_BP/MG1655_main.tsv
 
 # Problem: some genes related to iron do not have the keywords of iron in the GO annotation,
-# so extract genes that have those keywords in the product name (Fig Sx, First RNA-Seq dataset):
+# so extract genes that have those keywords in the product name (Fig S15, First RNA-Seq dataset):
 cut -f3,20,21 RNAseq_C325/DE_results_filtered_chromosome_padj.tsv | grep -E "Fe|iron|enterobactin|ferrous|heme|siderophore|ferritin" | sed 's/"//g' > plot_DEGs_by_BP/C325_main_prod.tsv
 cut -f3,19,20 RNAseq_CF13/DE_results_filtered_chromosome_padj.tsv | grep -E "Fe|iron|enterobactin|ferrous|heme|siderophore|ferritin" | sed 's/"//g' > plot_DEGs_by_BP/CF13_main_prod.tsv
 cut -f3,20,21 RNAseq_H53/DE_results_filtered_chromosome_padj.tsv | grep -E "Fe|iron|enterobactin|ferrous|heme|siderophore|ferritin" | sed 's/"//g' > plot_DEGs_by_BP/H53_main_prod.tsv
