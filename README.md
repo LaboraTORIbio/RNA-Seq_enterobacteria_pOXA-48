@@ -9,7 +9,7 @@
 
 ---
 
-Laura Toribio-Celestino, Alicia Calvo-Villamañán, Cristina Herencias, Aida Alonso-del Valle, Jorge Sastre-Dominguez, Susana Quesada, Javier DelaFuente, Didier Mazel, Eduardo Rocha, Ariadna Fernandez-Calvet, Alvaro San Millan (2024) **Plasmid-chromosome transcriptional crosstalk in multidrug resistant clinical enterobacteria.** *bioRxiv*. doi: https://doi.org/10.1101/2024.08.08.607126.
+Laura Toribio-Celestino, Alicia Calvo-Villamañán, Cristina Herencias, Aida Alonso-del Valle, Jorge Sastre-Dominguez, Susana Quesada, Didier Mazel, Eduardo PC Rocha, Ariadna Fernández-Calvet, Alvaro San Millan (2024) **Plasmid-chromosome transcriptional crosstalk in multidrug resistant clinical enterobacteria.** *bioRxiv*. doi: https://doi.org/10.1101/2024.08.08.607126.
 
 ---
 
