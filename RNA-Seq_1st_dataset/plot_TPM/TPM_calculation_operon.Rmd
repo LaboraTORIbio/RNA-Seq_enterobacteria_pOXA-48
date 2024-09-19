@@ -1,0 +1,119 @@
+---
+title: "TPM calculation"
+author: "Laura Toribio-Celestino"
+date: "10/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Loading required packages
+
+```{r, results='hide', eval=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(CustomSelection)
+library(reshape2)
+```
+
+
+
+Following files include TPM values of chromosomal genes, for each replicate, and the median TPM values between replicates, with and without pOXA-48.
+
+```{r, eval=TRUE}
+files <- list.files(pattern = "*operon_annot.tsv")
+for (i in 1:length(files)) assign(files[i], read.table(files[i], header = TRUE))
+```
+
+Reformating dataframes.
+
+```{r, eval=TRUE}
+CF13_wpl <- TPM_CF13_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+CF13_wpl$Strain <- "CF13"
+names(CF13_wpl)[names(CF13_wpl) == "median_tpm_wpl"] <- "median_TPM"
+CF13_wop <- TPM_CF13_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+CF13_wop$Strain <- "CF13c1"
+names(CF13_wop)[names(CF13_wop) == "median_tpm_wop"] <- "median_TPM"
+
+H53_wpl <- TPM_H53_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+H53_wpl$Strain <- "H53"
+names(H53_wpl)[names(H53_wpl) == "median_tpm_wpl"] <- "median_TPM"
+H53_wop <- TPM_H53_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+H53_wop$Strain <- "H53c1"
+names(H53_wop)[names(H53_wop) == "median_tpm_wop"] <- "median_TPM"
+
+J57_wpl <- TPM_J57_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+J57_wpl$Strain <- "J57"
+names(J57_wpl)[names(J57_wpl) == "median_tpm_wpl"] <- "median_TPM"
+J57_wop <- TPM_J57_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+J57_wop$Strain <- "J57c1"
+names(J57_wop)[names(J57_wop) == "median_tpm_wop"] <- "median_TPM"
+
+K147_wpl <- TPM_K147_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+K147_wpl$Strain <- "K147"
+names(K147_wpl)[names(K147_wpl) == "median_tpm_wpl"] <- "median_TPM"
+K147_wop <- TPM_K147_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+K147_wop$Strain <- "K147c1"
+names(K147_wop)[names(K147_wop) == "median_tpm_wop"] <- "median_TPM"
+
+KPN04_wpl <- TPM_KPN04_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+KPN04_wpl$Strain <- "TC_KPN04"
+names(KPN04_wpl)[names(KPN04_wpl) == "median_tpm_wpl"] <- "median_TPM"
+KPN04_wop <- TPM_KPN04_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+KPN04_wop$Strain <- "PF_KPN04"
+names(KPN04_wop)[names(KPN04_wop) == "median_tpm_wop"] <- "median_TPM"
+
+KPN07_wpl <- TPM_KPN07_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+KPN07_wpl$Strain <- "TC_KPN07"
+names(KPN07_wpl)[names(KPN07_wpl) == "median_tpm_wpl"] <- "median_TPM"
+KPN07_wop <- TPM_KPN07_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+KPN07_wop$Strain <- "PF_KPN07"
+names(KPN07_wop)[names(KPN07_wop) == "median_tpm_wop"] <- "median_TPM"
+
+KPN10_wpl <- TPM_KPN10_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+KPN10_wpl$Strain <- "TC_KPN10"
+names(KPN10_wpl)[names(KPN10_wpl) == "median_tpm_wpl"] <- "median_TPM"
+KPN10_wop <- TPM_KPN10_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+KPN10_wop$Strain <- "PF_KPN10"
+names(KPN10_wop)[names(KPN10_wop) == "median_tpm_wop"] <- "median_TPM"
+
+KPN15_wpl <- TPM_KPN15_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+KPN15_wpl$Strain <- "TC_KPN15"
+names(KPN15_wpl)[names(KPN15_wpl) == "median_tpm_wpl"] <- "median_TPM"
+KPN15_wop <- TPM_KPN15_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+KPN15_wop$Strain <- "PF_KPN15"
+names(KPN15_wop)[names(KPN15_wop) == "median_tpm_wop"] <- "median_TPM"
+
+KPN18_wpl <- TPM_KPN18_operon_annot.tsv[, c("GeneID", "median_tpm_wpl")]
+KPN18_wpl$Strain <- "TC_KPN18"
+names(KPN18_wpl)[names(KPN18_wpl) == "median_tpm_wpl"] <- "median_TPM"
+KPN18_wop <- TPM_KPN18_operon_annot.tsv[, c("GeneID", "median_tpm_wop")]
+KPN18_wop$Strain <- "PF_KPN18"
+names(KPN18_wop)[names(KPN18_wop) == "median_tpm_wop"] <- "median_TPM"
+
+df <- rbind(CF13_wpl, CF13_wop, H53_wpl, H53_wop, J57_wpl, J57_wop, K147_wpl, K147_wop, KPN04_wpl, KPN04_wop, KPN07_wpl, KPN07_wop, KPN10_wpl, KPN10_wop, KPN15_wpl, KPN15_wop, KPN18_wpl, KPN18_wop)
+```
+
+Violin plots.
+
+```{r, eval=TRUE}
+order <- c("CF13c1", "CF13", "J57c1", "J57", "H53c1", "H53", "K147c1", "K147", "PF_KPN15", "TC_KPN15", "PF_KPN18", "TC_KPN18", "PF_KPN04", "TC_KPN04", "PF_KPN07", "TC_KPN07", "PF_KPN10", "TC_KPN10")
+df$Strain <- factor(df$Strain, levels=order)
+p <- ggplot(df, aes(Strain, median_TPM))
+p + geom_violin(aes(Strain, median_TPM), position=position_dodge(.9)) +
+  xlab(NULL) + ylab("log10 TPM") + scale_y_continuous(trans = "log10") +
+  stat_summary(position=position_dodge(.9), fun = "median", geom = "point", color = "black") +
+  geom_text(aes(Strain, median_TPM, label=GeneID), data=df[df$GeneID %in% c("pfp", "ifp"), ]) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
+
+
+
+# Session Info
+
+```{r, eval=TRUE}
+sessionInfo()
+```
