@@ -286,6 +286,262 @@ echo "Of 2,878 Betaproteobacteria," $(grep "# Systems found:" macsyfinder_operon
 
 After filtering, 5983 Gamma-, 172 Alpha- and 191 Betaproteobacteria strains encode the *lysR-pfp-ifp* cluster. Run the script **get_system_seqs.py** (`./get_system_seqs.py`, changing class directory inside script) to store in `./operon_seqs/` the protein fasta files of the three genes of the cluster: one file for each strain and gene (e.g. KLEPNE.0723.00001_WP_015874629.1_lysR.fasta) and one file with the three genes concatenated into a single sequence in the order *lysR-pfp-ifp* (e.g. KLEPNE.0723.00001_concat.fasta).
 
+### Identifying clusters without the associated *lysR*
+
+To assess whether there are *pfp-ifp* gene clusters without the associated *lysR* gene, a second MacSyFinder model was constructed, excluding the LysR HMM profile (min_mandatory_genes_required = 2, min_genes_required = 2, inter_gene_max_space = 0): **MysteryOperonFinder_v2** (available [here](https://github.com/LaboraTORIbio/RNA-Seq_enterobacteria_pOXA-48/tree/main/LysR_and_the_mystery_operon/MysteryOperonFinder_v2)).
+
+```sh
+for directory in ncbi_dataset_gamma/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:37}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/gamma/$strain
+			fi
+		done
+	fi
+done
+
+for directory in ncbi_dataset_alpha/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:37}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/alpha/$strain
+			fi
+		done
+	fi
+done
+
+for directory in ncbi_dataset_beta/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:36}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/beta/$strain
+			fi
+		done
+	fi
+done
+
+for directory in ncbi_dataset_delta/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:37}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/delta/$strain
+			fi
+		done
+	fi
+done
+
+for directory in ncbi_dataset_epsilon/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:39}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/epsilon/$strain
+			fi
+		done
+	fi
+done
+
+for directory in ncbi_dataset_zeta/*; do
+	if [ -d "$directory" ]; then
+		faafiles=("$directory"/*.faa)
+		for file in "${faafiles[@]}"; do
+			# Check if the file is not protein.faa
+			if [ "$(basename "$file")" != "protein.faa" ]; then
+				strain=${file:36}
+				strain=${strain::-4}
+				macsyfinder --models MysteryOperonFinder_v2 all --models-dir ~/Software/macsy_models_v2/ --db-type ordered_replicon --replicon-topology circular --sequence-db $file -o macsyfinder_operon_v2/zeta/$strain
+			fi
+		done
+	fi
+done
+```
+
+```sh
+echo "Of 16,219 Gammaproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/gamma/*/best_solution.tsv | wc -l) "have the operon"
+# Of 16,219 Gammaproteobacteria, 7122 have the operon
+echo "Of 2,441 Alphaproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/alpha/*/best_solution.tsv | wc -l) "have the operon"
+# Of 2,441 Alphaproteobacteria, 186 have the operon
+echo "Of 2,878 Betaproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/beta/*/best_solution.tsv | wc -l) "have the operon"
+# Of 2,878 Betaproteobacteria, 241 have the operon
+echo "Of 5 Deltaproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/delta/*/best_solution.tsv | wc -l) "have the operon"
+# Of 5 Deltaproteobacteria, 0 have the operon
+echo "Of 1086 Epsilonproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/epsilon/*/best_solution.tsv | wc -l) "have the operon"
+# Of 1086 Epsilonproteobacteria, 3 have the operon
+echo "Of 2 Zetaproteobacteria," $(grep "# Systems found:" macsyfinder_operon_v2/zeta/*/best_solution.tsv | wc -l) "have the operon"
+# Of 2 Zetaproteobacteria, 0 have the operon
+```
+
+When using the MysteryOperonFinder model to search for *lysR-pfp-ifp* clusters, there were initially (before filtering) 6993 clusters identified in Gamma-, 211 in Alpha-, 201 in Beta- and 0 in Epsilonproteobacteria. The MysteryOperonFinder_v2 model would find these same clusters, excluding the erroneous clusters with *lysR* between *pfp* and *ifp* (3 in Gamma-, 39 in Alpha- and 4 in Betaproteobacteria), plus *pfp-ifp* clusters without *lysR*. Thus, **132 Gamma-** (7122-6993+3), **14 Alpha-** (186-211+39), **44 Beta-** (241-201+4) and **3 Epsilonproteobacteria** (3-0) encode **only** the *pfp-ifp* cluster without an associated *lysR* (strains encoding the *lysR-pfp-ifp* cluster **and** a *pfp-ifp* cluster are excluded). Now let's get the names of these strains that only encode a *pfp-ifp* cluster:
+
+```sh
+mkdir operon_wo_lysR/
+comm -13 <(grep "# Systems found:" macsyfinder_operon/gamma/*/best_solution.tsv | cut -d"/" -f3) <(grep "# Systems found:" macsyfinder_operon_v2/gamma/*/best_solution.tsv | cut -d"/" -f3) > operon_wo_lysR/gamma.txt
+comm -13 <(grep "# Systems found:" macsyfinder_operon/alpha/*/best_solution.tsv | cut -d"/" -f3) <(grep "# Systems found:" macsyfinder_operon_v2/alpha/*/best_solution.tsv | cut -d"/" -f3) > operon_wo_lysR/alpha.txt
+comm -13 <(grep "# Systems found:" macsyfinder_operon/beta/*/best_solution.tsv | cut -d"/" -f3) <(grep "# Systems found:" macsyfinder_operon_v2/beta/*/best_solution.tsv | cut -d"/" -f3) > operon_wo_lysR/beta.txt
+comm -13 <(grep "# Systems found:" macsyfinder_operon/epsilon/*/best_solution.tsv | cut -d"/" -f3) <(grep "# Systems found:" macsyfinder_operon_v2/epsilon/*/best_solution.tsv | cut -d"/" -f3) > operon_wo_lysR/epsilon.txt
+```
+
+The script **check_systems_v2.py** (i) goes through the MysteryOperonFinder_v2 result files for each of the strains encoding only a *pfp-ifp* cluster, (ii) matches the GeneID of the *pfp* of the cluster to the annotated gene in the genomic GFF file, (iii) prints the 2 preceding and 2 following genes, (iv) checks whether any of these genes is *lysR* and if true (v) checks if the *lysR* is functional. The script must be run like `./check_systems_v2.py`, changing inside the script the directory name for each Proteobacteria class. The output of the script for each Proteobacteria class (excluding the annotation lines) is:
+
+```sh
+### Gamma:
+# Total number of strains = 132
+# 61 strains encode a LysR within +-2 genes distance from pfp (34 adjacent to pfp, 10 adjacent to ifp)
+# Of these LysRs, 41 are knocked-out or frameshifted.
+### Alpha:
+# Total number of strains = 14
+# 8 strains encode a LysR within +-2 genes distance from pfp (0 adjacent to pfp, 3 adjacent to ifp)
+# Of these LysRs, 3 are knocked-out or frameshifted.
+### Beta:
+# Total number of strains = 44
+# 15 strains encode a LysR within +-2 genes distance from pfp (6 adjacent to pfp, 0 adjacent to ifp)
+# Of these LysRs, 5 are knocked-out or frameshifted.
+### Epsilon:
+# Total number of strains = 3
+# 0 strains encode a LysR within +-2 genes distance from pfp (0 adjacent to pfp, 0 adjacent to ifp)
+# Of these LysRs, 0 are knocked-out or frameshifted.
+```
+
+
+## Association analysis
+
+To study the possible association between encoding a *lysR-pfp-ifp* cluster and carrying pOXA-48 in the RefSeq database, pOXA-48 plasmids were first identified in all Gammaproteobacteria strains. A strain was considered to carry pOXA-48 when (i) the best, largest BLASTn hit between the sequence of pOXA-48_K8 (accession number MT441554) and the target contig had >95% identity and >10 Kb alignment, (ii) the contig contained the pOXA-48 IncL replicon and (iii) the *bla*<sub>OXA-48</sub> gene, as detected by ABRicate with the PlasmidFinder and ResFinder databases:
+
+```sh
+mkdir -p association_analysis/abricate_plas/
+mkdir association_analysis/abricate_res/
+mkdir association_analysis/blastn/
+
+# Identify plasmid replicons and resistance genes in Gammaproteobacteria:
+for fasta in ncbi_dataset_gamma/*/*.fna
+do
+        name=$(echo $fasta | cut -d"/" -f2)
+        abricate --db plasmidfinder $fasta > association_analysis/abricate_plas/$name".tsv"
+        abricate --db resfinder $fasta > association_analysis/abricate_res/$name".tsv"
+done
+
+# Save contig names of pOXA-48 replicons:
+grep "pOXA-48" association_analysis/abricate_plas/* | cut -f 2 | sort | uniq > association_analysis/abricate_names_pOXA-48.txt
+# Save contig names where blaOXA-48 is located:
+grep "blaOXA-48" association_analysis/abricate_res/* | cut -f 2 | sort | uniq > association_analysis/abricate_names_blaOXA-48.txt
+
+# BLASTn of pOXA-48_K8 against Gammaproteobacteria:
+for fasta in ncbi_dataset_gamma/*/*.fna
+do
+        name=$(echo $fasta | cut -d"/" -f2)
+        makeblastdb -in $fasta -dbtype nucl
+        blastn -query ~/PBE/Closed_sequences/plasmids/pOXA-48_K8.fasta -db $fasta -outfmt 6 > association_analysis/blastn/$name".tsv"
+done
+
+# Filter BLASTn results for >95% identity and >10 Kb alignment:
+awk '{if ($3 > 95 && $4 > 10000) { print } }' association_analysis/blastn/* | cut -f 2 | sort | uniq > association_analysis/blastn_names_pOXA-48.txt
+
+# Match contig IDs that pass BLASTn filters, have a pOXA-48 rep and encode blaOXA-48:
+comm -12 association_analysis/blastn_names_pOXA-48.txt association_analysis/abricate_names_pOXA-48.txt | comm -12 - association_analysis/abricate_names_blaOXA-48.txt > association_analysis/common_names_pOXA-48_plasmid.txt
+
+# Get the strain name for each plasmid ID:
+grep -f association_analysis/common_names_pOXA-48_plasmid.txt ncbi_dataset_gamma/*/*.fna | awk -F"[/:> ]" '{print $2"\t"$5}' > association_analysis/common_names_pOXA-48_plasmid_strains.txt
+
+#### Number of pOXA-48 plasmids:
+cut -d"." -f1 association_analysis/common_names_pOXA-48_plasmid_strains.txt | sort | uniq -c
+#      6 CITFRE
+#      2 CITKOS
+#      2 ENTCLO
+#      6 ENTHOR
+#      1 ENTROG
+#     27 ESCCOL
+#      1 KLEAER
+#      6 KLEOXY
+#    114 KLEPNE
+#      2 KLEVAR
+#      5 SALENT
+#      1 SERMAR
+```
+
+According to our criteria, 173 Gammaproteobacteria strains carry pOXA-48, including 123 *Klebsiella* spp., 27 *E. coli*, 9 *Enterobacter* spp., 8 *Citrobacter* spp., 5 *Salmonella enterica* and 1 *Serratia marcescens* strains. Analyses were then performed with the RefSeq genomes of the six genera where pOXA-48 was identified:
+
+```sh
+# Total number of genomes of genera that can carry pOXA-48: 8125
+grep -E "Citrobacter |Enterobacter |Escherichia |Klebsiella |Salmonella |Serratia " ncbi_dataset_gamma/data_information.tsv | cut -f1 > association_analysis/strains_genera_pOXA-48_carriers.txt
+cat association_analysis/strains_genera_pOXA-48_carriers.txt | wc -l
+
+# Number of these genera that encode the cluster: 4728
+while IFS="" read -r strain || [ -n "$strain" ]
+do
+    grep "# Systems found:" macsyfinder_operon/gamma/$strain/all_systems.txt
+done < association_analysis/strains_genera_pOXA-48_carriers.txt | wc -l
+
+# Strains with clusters with non-functional lysRs:
+./check_systems_v2.py | grep -A10 -E "CIT|ENT|ESC|KLE|SAL|SER"
+# The output is inspected to check which strains of these genera encode a lysR
+# annotated as frameshifted, partial, pseudogene, stop codon, etc.
+# There were 24 strains with non-functional lysRs:
+# CITFRE.0723.00017
+# ENTCAN.0723.00004
+# ENTCHU.0723.00001
+# ENTCHU.0723.00002
+# ENTCLO.0723.00042
+# ENTHOR.0723.00061
+# ENTHOR.0723.00077
+# ENTLUD.0723.00008
+# ENTLUD.0723.00009
+# ENTROG.0723.00001
+# ENTROG.0723.00034
+# KLEPNE.0723.00314
+# KLEPNE.0723.00955
+# KLEPNE.0723.01129
+# KLEPNE.0723.01596
+# KLEPNE.0723.01606
+# KLEPNE.0723.01611
+# KLEQUA.0723.00043
+# KLEVAR.0723.00005
+# SALENT.0723.00349
+# SALENT.0723.00569
+# SALENT.0723.01013
+# SALENT.0723.01081
+# SERMAR.0723.00095
+comm -12 <(cut -f1 association_analysis/common_names_pOXA-48_plasmid_strains.txt | sort) <(sort association_analysis/strains_non-functional_lysR_cluster.txt)
+# And none of these carried pOXA-48
+
+# Number of strains encoding the cluster and carrying pOXA-48: 145
+while IFS="" read -r strain || [ -n "$strain" ]
+do
+    grep "# Systems found:" macsyfinder_operon/gamma/$strain/all_systems.txt
+done < <(cut -f1 association_analysis/common_names_pOXA-48_plasmid_strains.txt) | wc -l
+```
+
+With these numbers, the contingency table (analyzed in R with a chi-square test: **chi2_cluster.R**) looks like:
+
+```sh
+# Contingency table for complete clusters + clusters with non-functional lysRs:
+#	            cluster   no_cluster
+# pOXA48      145       28	        173
+# no_pOXA48   4607      3369        7952
+#	            4752      3397
+# Of strains encoding the cluster, 3.1% carry pOXA-48
+# Of strains not encoding the cluster, 0.8% carry pOXA-48
+```
+
 
 ## Origin of the *lysR-pfp-ifp* cluster: phylogeny of the cluster
 
