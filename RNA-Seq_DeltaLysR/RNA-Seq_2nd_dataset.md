@@ -42,7 +42,7 @@ multiqc reads_RNAseq/raw_reads/fastQC_analysis/* -o reads_RNAseq/raw_reads/fastQ
 Reads were trimmed with **Trim Galore v0.6.4**, generating FastQC reports. Note that the base name is the prefix *SeqCoast* (sequencing center) followed by the strain name and replicate number (e.g. SeqCoast_CF13_pOXA-48_1):
 
 ```sh
-trim_galore --quality 20 --length 50 --fastqc --basename SeqCoasT_<strain_name> --output_dir reads_RNAseq/ reads_RNAseq/raw_reads/<fastq1> reads_RNAseq/raw_reads/<fastq2>
+trim_galore --paired --quality 20 --length 50 --fastqc --basename SeqCoast_<strain_name> --output_dir reads_RNAseq/ reads_RNAseq/raw_reads/<fastq1> reads_RNAseq/raw_reads/<fastq2>
 ```
 
 FastQC reports were combined with **MultiQC v1.11**:
