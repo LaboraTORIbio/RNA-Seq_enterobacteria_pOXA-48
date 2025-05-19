@@ -9,7 +9,7 @@
 
 ---
 
-Laura Toribio-Celestino, Alicia Calvo-Villamañán, Cristina Herencias, Aida Alonso-del Valle, Jorge Sastre-Dominguez, Susana Quesada, Didier Mazel, Eduardo PC Rocha, Ariadna Fernández-Calvet, Alvaro San Millan (2024) **Plasmid-chromosome transcriptional crosstalk in multidrug resistant clinical enterobacteria.** *bioRxiv*. doi: https://doi.org/10.1101/2024.08.08.607126.
+Laura Toribio-Celestino, Alicia Calvo-Villamañán, Cristina Herencias, Aida Alonso-del Valle, Jorge Sastre-Dominguez, Susana Quesada, Didier Mazel, Eduardo PC Rocha, Ariadna Fernández-Calvet, Alvaro San Millan (2024) **A plasmid-chromosome crosstalk in multidrug resistant clinical enterobacteria.** *Nat Commun* 15, 10859 doi: [https://doi.org/10.1101/2024.08.08.607126](https://doi.org/10.1038/s41467-024-55169-y).
 
 ---
 
@@ -65,7 +65,7 @@ Includes workflows for exploratory data analyses, generating plots and performin
 
 ---
 
-Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Herencias, Pedro Herrador Gómez, Coloma Costas Romero, Rafael Cantón, Jerónimo Rodríguez-Beltrán, Alfonso Santos-Lopez, Alvaro San Millan (2024) **Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria.** *bioRxiv*. doi: https://doi.org/10.1101/2024.03.01.582297.
+Jorge Sastre-Dominguez, Javier DelaFuente, Laura Toribio-Celestino, Cristina Herencias, Pedro Herrador Gómez, Coloma Costas Romero, Rafael Cantón, Jerónimo Rodríguez-Beltrán, Alfonso Santos-Lopez, Alvaro San Millan (2024) **Plasmid-encoded insertion sequences promote rapid adaptation in clinical enterobacteria.** *Nat Ecol Evol* 8, 2097–2112 doi: [https://doi.org/10.1101/2024.03.01.582297](https://doi.org/10.1038/s41559-024-02523-4).
 
 ---
 
